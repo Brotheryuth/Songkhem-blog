@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="រឿងរ៉ាវ | SongKhem"
+  description="រឿងរ៉ាវនៃការផ្លាស់ប្តូរ ការអភិវឌ្ឍបច្ចេកវិទ្យា និងដំណឹងសហគមន៍ពីក្រុមការងារ SongKhem។"
+  currentPath="/km/stories"
+  lang="km"
+>
+  <section class="container-editorial page-section">
+    <header class="section-header">
+      <h1 class="type-h1 font-khmer">រឿងរ៉ាវ និងការយល់ដឹង</h1>
+      <p class="type-body-medium subtitle font-khmer">
+        ស្វែងយល់ពីបេសកកម្ម ការវិវឌ្ឍបច្ចេកវិទ្យា និងផលជះក្នុងសហគមន៍របស់យើង។
+      </p>
+    </header>
+
+    <div class="stories-placeholder">
+      <p class="type-caption font-khmer">បញ្ជីអត្ថបទ និងរឿងរ៉ាវនឹងបង្ហាញនៅទីនេះ។</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-section {
+    padding: var(--space-8) var(--space-4);
+    min-height: 50vh;
+  }
+
+  .section-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: var(--space-2);
+  }
+
+  .stories-placeholder {
+    padding: var(--space-7);
+    border: 1px dashed var(--md-sys-color-outline-variant);
+    border-radius: var(--radius-md);
+    text-align: center;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+</style>
+

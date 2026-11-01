@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="អំពីយើង | SongKhem"
+  description="បេសកកម្មរបស់យើងក្នុងការធ្វើឱ្យឯកសារបោះពុម្ពជាភាសាខ្មែរអាចចូលមើល និងស្តាប់បានសម្រាប់មនុស្សគ្រប់រូប។"
+  currentPath="/km/about"
+  lang="km"
+>
+  <section class="container-editorial page-section">
+    <header class="section-header">
+      <h1 class="type-h1 font-khmer">អំពី SongKhem</h1>
+      <p class="type-body-medium subtitle font-khmer">
+        តភ្ជាប់គម្លាតនៃលទ្ធភាពប្រើប្រាស់តាមរយៈបច្ចេកវិទ្យាជំនួយការមើលឃើញឆ្លាតវៃ។
+      </p>
+    </header>
+
+    <div class="content-body type-body-longform font-khmer">
+      <p>
+        SongKhem ត្រូវបានបង្កើតឡើងដើម្បីផ្តល់សិទ្ធិអំណាចដល់អ្នកមានបញ្ហាគំហើញ តាមរយៈការបំប្លែងឯកសារបោះពុម្ពខ្មែរទៅជាសំឡេងភ្លាមៗ និងការរំលេចពាក្យអានស្របគ្នា។
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-section {
+    padding: var(--space-8) var(--space-4);
+    min-height: 50vh;
+  }
+
+  .section-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: var(--space-2);
+  }
+
+  .content-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    line-height: 1.8;
+  }
+</style>
+

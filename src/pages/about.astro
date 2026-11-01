@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About us | SongKhem"
+  description="Our mission to make printed Khmer literature accessible to everyone."
+  currentPath="/about"
+  lang="en"
+>
+  <section class="container-editorial page-section">
+    <header class="section-header">
+      <h1 class="type-h1">About SongKhem</h1>
+      <p class="type-body-medium subtitle">
+        Bridging the physical-to-digital accessibility gap through assistive AI.
+      </p>
+    </header>
+
+    <div class="content-body type-body-longform">
+      <p>
+        SongKhem is built to empower vision impaired readers by turning physical Khmer documents into real-time spoken audio and synchronized word-by-word reading.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-section {
+    padding: var(--space-8) var(--space-4);
+    min-height: 50vh;
+  }
+
+  .section-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: var(--space-2);
+  }
+
+  .content-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    line-height: 1.75;
+  }
+</style>
+
