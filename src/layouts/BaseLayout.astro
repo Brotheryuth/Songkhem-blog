@@ -45,7 +45,7 @@ const i18nPayload = JSON.stringify(ui);
       <slot />
     </main>
 
-    <SiteFooter />
+    <SiteFooter lang={lang} />
 
     <script is:inline define:vars={{ i18nPayload }}>
       // 1. Instant Client-Side Theme Engine

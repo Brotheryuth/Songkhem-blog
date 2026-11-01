@@ -107,6 +107,13 @@
 }
 
 /* Base Body Application */
+html {
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-surface);
@@ -115,7 +122,14 @@ body {
 }
 
 /* Optical Tuning for Dark Mode */
-[data-theme="dark"] body {
+[data-theme="dark"] html {
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+}
+
+body {
   letter-spacing: 0.02em;
   -webkit-font-smoothing: subpixel-antialiased;
 }
@@ -128,53 +142,53 @@ body {
   line-height: 1.8 !important;
 }
 
-/* Type Scale Utilities */
+/* Type Scale Utilities (Enhanced Readability & Scaling) */
 .type-display {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1.2;
   letter-spacing: -0.25px;
   font-weight: 700;
 }
 
 .type-h1 {
-  font-size: clamp(1.5rem, 3vw, 2.0rem);
+  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
   line-height: 1.25;
   letter-spacing: 0px;
   font-weight: 600;
 }
 
 .type-h2 {
-  font-size: 1.5rem;
+  font-size: 1.625rem;
   line-height: 1.3;
   letter-spacing: 0px;
   font-weight: 600;
 }
 
 .type-h3 {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   line-height: 1.4;
   letter-spacing: 0.15px;
   font-weight: 600;
 }
 
 .type-body-longform {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   line-height: 1.75;
   letter-spacing: 0.25px;
   font-weight: 400;
 }
 
 .type-body-medium {
-  font-size: 1.0rem;
+  font-size: 1.0625rem;
   line-height: 1.6;
   letter-spacing: 0.25px;
   font-weight: 400;
 }
 
 .type-caption {
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  letter-spacing: 0.4px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
   font-weight: 500;
 }
 

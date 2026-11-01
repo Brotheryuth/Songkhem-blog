@@ -1,42 +1,105 @@
 ---
-// SiteFooter.astro: Semantic footer with ecosystem navigation & accessibility notice
+// SiteFooter.astro: Semantic footer with ecosystem navigation, social contacts & accessibility notice
+import { useTranslations, type Language } from '../../i18n/translations';
+
+interface Props {
+  lang?: Language;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <footer class="site-footer" role="contentinfo">
   <div class="container-max footer-inner">
+    <!-- Column 1: Brand & Mission -->
     <div class="footer-column brand-col">
       <div class="footer-brand">
         <span class="brand-title">SongKhem</span>
-        <span class="brand-tagline">Stories & Guides</span>
+        <span class="brand-tagline" data-i18n="footer.brandTagline">{t('footer.brandTagline')}</span>
       </div>
-      <p class="footer-mission type-caption">
-        Public editorial platform bridging human storytelling and assistive technology. Designed for high readability, minimal friction, and WCAG AAA compliance for vision impaired users.
+      <p class="footer-mission" data-i18n="footer.mission">
+        {t('footer.mission')}
       </p>
     </div>
 
+    <!-- Column 2: Pages -->
     <div class="footer-column">
-      <h2 class="footer-heading type-caption">Ecosystem</h2>
+      <h2 class="footer-heading" data-i18n="footer.pages">{t('footer.pages')}</h2>
       <ul class="footer-links">
-        <li><a href="https://app.songkhem.com" target="_blank" rel="noopener noreferrer">Assistive Workspace</a></li>
-        <li><a href="/stories">Editorial Stories</a></li>
-        <li><a href="/about">Mission & Values</a></li>
+        <li>
+          <a href="/" data-i18n="nav.home">{t('nav.home')}</a>
+        </li>
+        <li>
+          <a href="/#features" data-i18n="nav.features">{t('nav.features')}</a>
+        </li>
+        <li>
+          <a href="/stories" data-i18n="nav.stories">{t('nav.stories')}</a>
+        </li>
+        <li>
+          <a href="/about" data-i18n="nav.about">{t('nav.about')}</a>
+        </li>
+        <li>
+          <a href="https://app.songkhem.com" target="_blank" rel="noopener noreferrer" data-i18n="hero.cta">
+            {t('hero.cta')}
+          </a>
+        </li>
       </ul>
     </div>
 
+    <!-- Column 3: Contact (Telegram, Facebook, Instagram) -->
     <div class="footer-column">
-      <h2 class="footer-heading type-caption">Accessibility & Scripts</h2>
-      <p class="footer-meta type-caption">
-        Optimized for dual-language typography (Khmer & English) with diacritic collision protection.
-      </p>
-      <p class="footer-meta type-caption">
-        Standard: WCAG AAA High Contrast compliant.
-      </p>
+      <h2 class="footer-heading" data-i18n="footer.contact">{t('footer.contact')}</h2>
+      <ul class="footer-contact-list">
+        <li>
+          <a
+            href="https://t.me/songkhem"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-link"
+            aria-label="SongKhem Telegram channel"
+          >
+            <svg class="contact-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+            </svg>
+            <span>Telegram</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.facebook.com/songkhem.cambodia.kh"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-link"
+            aria-label="SongKhem Facebook page"
+          >
+            <svg class="contact-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95C18.05 21.45 22 17.19 22 12z"/>
+            </svg>
+            <span>Facebook</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.instagram.com/songkhem.cambodia.kh"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-link"
+            aria-label="SongKhem Instagram profile"
+          >
+            <svg class="contact-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            <span>Instagram</span>
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
 
   <div class="container-max footer-bottom">
-    <p class="copyright type-caption">
-      &copy; {new Date().getFullYear()} SongKhem. All rights reserved.
+    <p class="copyright">
+      &copy; {new Date().getFullYear()} <span data-i18n="footer.copyright">{t('footer.copyright')}</span>
     </p>
   </div>
 </footer>
@@ -45,76 +108,108 @@
   .site-footer {
     background-color: var(--md-sys-color-surface-container);
     border-top: 1px solid var(--color-border);
-    padding-top: var(--space-7);
-    padding-bottom: var(--space-5);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-6);
     margin-top: auto;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
   }
 
   .footer-inner {
     display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr;
-    gap: var(--space-6);
+    grid-template-columns: 2fr 1fr 1.2fr;
+    gap: var(--space-7);
   }
 
   .footer-brand {
     display: flex;
     align-items: baseline;
-    gap: var(--space-2);
+    gap: var(--space-3);
     margin-bottom: var(--space-3);
   }
 
   .brand-title {
-    font-size: 1.125rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--color-primary);
+    letter-spacing: -0.5px;
   }
 
   .brand-tagline {
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--md-sys-color-on-surface-variant);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .footer-mission {
     color: var(--md-sys-color-on-surface-variant);
-    max-width: 420px;
-    line-height: 1.6;
+    font-size: 1.0625rem;
+    max-width: 440px;
+    line-height: 1.7;
   }
 
   .footer-heading {
     text-transform: uppercase;
+    font-size: 1rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     color: var(--md-sys-color-on-surface);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
   }
 
-  .footer-links {
+  .footer-links,
+  .footer-contact-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-3);
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 
   .footer-links a {
     color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.875rem;
-    transition: color 0.15s ease;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+    display: inline-block;
   }
 
   .footer-links a:hover {
     color: var(--color-primary);
-    text-decoration: underline;
+    transform: translateX(2px);
   }
 
-  .footer-meta {
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
     color: var(--md-sys-color-on-surface-variant);
-    margin-bottom: var(--space-2);
-    line-height: 1.5;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  .contact-icon {
+    flex-shrink: 0;
+    color: var(--color-primary);
+    transition: transform 0.15s ease;
+  }
+
+  .contact-link:hover {
+    color: var(--color-primary);
+    transform: translateX(2px);
+  }
+
+  .contact-link:hover .contact-icon {
+    transform: scale(1.1);
   }
 
   .footer-bottom {
-    margin-top: var(--space-6);
+    margin-top: var(--space-7);
     padding-top: var(--space-4);
     border-top: 1px solid var(--color-border);
     display: flex;
@@ -124,24 +219,73 @@
 
   .copyright {
     color: var(--md-sys-color-outline);
+    font-size: 0.9375rem;
+    font-weight: 400;
   }
 
-  [data-theme="contrast"] .site-footer {
+  /* Dark Theme */
+  :global([data-theme="dark"]) .site-footer {
+    background-color: #16171B;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="dark"]) .brand-title {
+    color: #A8C7FA;
+  }
+
+  :global([data-theme="dark"]) .brand-tagline,
+  :global([data-theme="dark"]) .footer-mission,
+  :global([data-theme="dark"]) .footer-links a,
+  :global([data-theme="dark"]) .contact-link {
+    color: #C4C7C5;
+  }
+
+  :global([data-theme="dark"]) .footer-heading {
+    color: #FFFFFF;
+  }
+
+  :global([data-theme="dark"]) .contact-icon {
+    color: #A8C7FA;
+  }
+
+  :global([data-theme="dark"]) .footer-links a:hover,
+  :global([data-theme="dark"]) .contact-link:hover {
+    color: #FFFFFF;
+  }
+
+  :global([data-theme="dark"]) .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="dark"]) .copyright {
+    color: #8E918F;
+  }
+
+  /* High Contrast WCAG AAA */
+  :global([data-theme="contrast"]) .site-footer {
     background-color: #000000;
     border-top: 2px solid #FFFF00;
   }
 
-  [data-theme="contrast"] .brand-title,
-  [data-theme="contrast"] .footer-heading,
-  [data-theme="contrast"] .footer-links a,
-  [data-theme="contrast"] .copyright {
+  :global([data-theme="contrast"]) .brand-title,
+  :global([data-theme="contrast"]) .brand-tagline,
+  :global([data-theme="contrast"]) .footer-heading,
+  :global([data-theme="contrast"]) .footer-mission,
+  :global([data-theme="contrast"]) .footer-links a,
+  :global([data-theme="contrast"]) .contact-link,
+  :global([data-theme="contrast"]) .contact-icon,
+  :global([data-theme="contrast"]) .copyright {
     color: #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .footer-bottom {
+    border-top: 2px solid #FFFF00;
   }
 
   @media (max-width: 768px) {
     .footer-inner {
       grid-template-columns: 1fr;
-      gap: var(--space-5);
+      gap: var(--space-6);
     }
   }
 </style>
