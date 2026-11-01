@@ -1,0 +1,82 @@
+---
+import backgroundSvg from '../../assets/background.svg';
+import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
+
+interface Props {
+  lang?: Language;
+  badge: TranslationKey;
+  title: TranslationKey;
+  description: TranslationKey;
+}
+
+const { lang = 'en', badge, title, description } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="page-hero" aria-labelledby="page-title">
+  <div
+    class="page-hero-bg"
+    style={`background-image: url(${backgroundSvg.src})`}
+    aria-hidden="true"
+  ></div>
+
+  <div class="container-feed page-hero-content">
+    <p class="page-hero-badge" data-i18n={badge}>{t(badge)}</p>
+    <h1 id="page-title" class="type-display" data-i18n={title}>{t(title)}</h1>
+    <p class="page-hero-description" data-i18n={description}>{t(description)}</p>
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    padding: var(--space-8) 0;
+    background-color: var(--color-surface);
+    overflow: hidden;
+  }
+
+  .page-hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-repeat: repeat;
+    background-size: 560px auto;
+    background-position: center;
+    opacity: 0.22;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 60%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 60%, transparent 100%);
+  }
+
+  .page-hero-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .page-hero-badge {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  .page-hero-description {
+    max-width: 640px;
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  [data-theme="dark"] .page-hero-bg {
+    filter: invert(1) brightness(0.85);
+  }
+
+  [data-theme="contrast"] .page-hero-bg {
+    display: none;
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+import PageHero from '../layout/PageHero.astro';
+import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
+
+interface Props {
+  lang?: Language;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+
+const stories: { id: string; tag: TranslationKey; title: TranslationKey; body: TranslationKey[] }[] = [
+  {
+    id: 'mission',
+    tag: 'stories.mission.tag',
+    title: 'stories.mission.title',
+    body: ['stories.mission.p1', 'stories.mission.p2'],
+  },
+  {
+    id: 'reading',
+    tag: 'stories.reading.tag',
+    title: 'stories.reading.title',
+    body: ['stories.reading.p1', 'stories.reading.p2'],
+  },
+  {
+    id: 'script',
+    tag: 'stories.script.tag',
+    title: 'stories.script.title',
+    body: ['stories.script.p1', 'stories.script.p2'],
+  },
+];
+---
+
+<PageHero
+  lang={lang}
+  badge="stories.badge"
+  title="stories.title"
+  description="stories.description"
+/>
+
+<div class="container-feed stories">
+  {stories.map((story) => (
+    <article class="story" aria-labelledby={`story-${story.id}`}>
+      <p class="story-tag type-caption" data-i18n={story.tag}>{t(story.tag)}</p>
+      <div>
+        <h2 id={`story-${story.id}`} class="type-h2" data-i18n={story.title}>{t(story.title)}</h2>
+        <div class="story-body type-body-longform">
+          {story.body.map((paragraph) => (
+            <p data-i18n={paragraph}>{t(paragraph)}</p>
+          ))}
+        </div>
+      </div>
+    </article>
+  ))}
+
+  <p class="stories-more type-body-medium" data-i18n="stories.more">{t('stories.more')}</p>
+</div>
+
+<style>
+  .stories {
+    padding-bottom: var(--space-8);
+  }
+
+  .story {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-7) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .story-tag {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .story-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .stories-more {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  @media (min-width: 768px) {
+    .story {
+      grid-template-columns: 180px 1fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

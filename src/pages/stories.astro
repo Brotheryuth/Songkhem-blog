@@ -1,48 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import StoriesContent from '../components/stories/StoriesContent.astro';
 ---
 
 <BaseLayout
   title="Stories | SongKhem"
-  description="Impact stories, release notes, and community updates from the SongKhem team."
+  description="Notes on why we build SongKhem, how it works, and what we are learning."
   currentPath="/stories"
   lang="en"
 >
-  <section class="container-editorial page-section">
-    <header class="section-header">
-      <h1 class="type-h1">Stories & Insights</h1>
-      <p class="type-body-medium subtitle">
-        Read about our mission, technology updates, and community impact.
-      </p>
-    </header>
-
-    <div class="stories-placeholder">
-      <p class="type-caption">Article feed and stories collection will appear here.</p>
-    </div>
-  </section>
+  <StoriesContent lang="en" />
 </BaseLayout>
-
-<style>
-  .page-section {
-    padding: var(--space-8) var(--space-4);
-    min-height: 50vh;
-  }
-
-  .section-header {
-    margin-bottom: var(--space-6);
-  }
-
-  .subtitle {
-    color: var(--md-sys-color-on-surface-variant);
-    margin-top: var(--space-2);
-  }
-
-  .stories-placeholder {
-    padding: var(--space-7);
-    border: 1px dashed var(--md-sys-color-outline-variant);
-    border-radius: var(--radius-md);
-    text-align: center;
-    color: var(--md-sys-color-on-surface-variant);
-  }
-</style>
-
