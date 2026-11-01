@@ -13,7 +13,7 @@ const t = useTranslations(lang);
 ---
 
 <section id="hero" class="hero-section" aria-label="Introduction">
-  <!-- Prominently Visible Khmer Pattern Backdrop -->
+  <!-- Prominently Visible Khmer Pattern Backdrop (Adapts to Light, Dark, & Contrast) -->
   <div
     class="hero-bg-layer"
     style={`background-image: url(${backgroundSvg.src})`}
@@ -48,7 +48,7 @@ const t = useTranslations(lang);
       </div>
     </div>
 
-    <!-- Right Column: Dual Screens (Bigger & Closer Together) -->
+    <!-- Right Column: Dual Screens (Moved Further to Right, Zero Borders) -->
     <div class="hero-visual" aria-hidden="true">
       <div class="device-frame device-camera">
         <img
@@ -75,12 +75,12 @@ const t = useTranslations(lang);
 <style>
   .hero-section {
     position: relative;
-    padding: var(--space-8) 0 calc(var(--space-8) + var(--space-4));
+    padding: var(--space-8) 0 calc(var(--space-8) + var(--space-5));
     background-color: var(--color-surface);
     overflow: hidden;
   }
 
-  /* Clear, Prominently Visible Authentic Pattern */
+  /* 1. Default Light Mode: Crisp Brand Blue Pattern */
   .hero-bg-layer {
     position: absolute;
     inset: 0;
@@ -88,10 +88,24 @@ const t = useTranslations(lang);
     background-repeat: repeat;
     background-size: 560px auto;
     background-position: center;
-    opacity: 0.22; /* Vivid and noticeable */
+    opacity: 0.18;
     z-index: 0;
-    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 60%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 60%, transparent 100%);
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, #000 65%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, #000 65%, transparent 100%);
+    transition: opacity 0.25s ease, filter 0.25s ease;
+  }
+
+  /* 2. Dark Mode: Subtle White/Silver Pattern */
+  :global([data-theme="dark"]) .hero-bg-layer {
+    opacity: 0.18;
+    filter: invert(1) brightness(0.75);
+  }
+
+  /* 3. Contrast Mode: Bright High-Contrast Yellow Pattern */
+  :global([data-theme="contrast"]) .hero-bg-layer {
+    display: block;
+    opacity: 0.28;
+    filter: invert(94%) sepia(93%) saturate(1352%) hue-rotate(359deg) brightness(106%) contrast(107%);
   }
 
   .hero-container {
@@ -109,7 +123,7 @@ const t = useTranslations(lang);
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-4);
-    max-width: 540px;
+    max-width: 500px;
   }
 
   .hero-badge {
@@ -162,48 +176,56 @@ const t = useTranslations(lang);
     transform: translateY(-2px);
   }
 
-  /* Right Column: Dual Screens (Bigger & Closer Together) */
+  /* Right Column: Dual Screens (Zero Borders, Soft Natural Shadows) */
   .hero-visual {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    gap: 8px;
     position: relative;
     padding: var(--space-5) 0;
     width: 100%;
+    margin-left: auto;
   }
 
   .device-frame {
     position: relative;
     width: 50%;
     max-width: 330px;
+    border: none !important;
+    outline: none !important;
     filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.16));
-    transition: transform 0.25s ease;
+    transition: transform 0.3s ease;
   }
 
   .device-frame img {
     width: 100%;
     height: auto;
     display: block;
+    border: none;
+    border-radius: 0;
   }
 
-  /* Staggered cascade */
+  /* Staggered & angled cascade */
   .device-camera {
-    transform: translateY(28px);
+    transform: translateY(32px) rotate(-3deg);
     z-index: 1;
   }
 
   .device-reader {
-    transform: translateY(-28px);
+    transform: translateY(-32px) rotate(2deg);
     z-index: 2;
-    margin-left: -16px;
+    margin-left: -18px;
   }
 
   /* Desktop */
   @media (min-width: 1024px) {
     .hero-container {
-      grid-template-columns: 1fr 1.1fr;
-      gap: var(--space-6);
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-7);
+    }
+
+    .hero-visual {
+      transform: translateX(50px);
     }
 
     .device-frame {
@@ -211,7 +233,14 @@ const t = useTranslations(lang);
     }
 
     .device-reader {
-      margin-left: -24px;
+      margin-left: -20px;
+    }
+  }
+
+  /* Large Desktop */
+  @media (min-width: 1280px) {
+    .hero-visual {
+      transform: translateX(80px);
     }
   }
 
@@ -219,6 +248,12 @@ const t = useTranslations(lang);
   @media (min-width: 768px) and (max-width: 1023px) {
     .hero-content {
       max-width: 680px;
+    }
+
+    .hero-visual {
+      justify-content: center;
+      margin-top: var(--space-4);
+      transform: none;
     }
 
     .device-frame {
@@ -229,7 +264,9 @@ const t = useTranslations(lang);
   /* Mobile */
   @media (max-width: 767px) {
     .hero-visual {
+      justify-content: center;
       gap: 4px;
+      transform: none;
     }
 
     .device-frame {
@@ -237,45 +274,36 @@ const t = useTranslations(lang);
     }
 
     .device-camera {
-      transform: translateY(12px);
+      transform: translateY(12px) rotate(-2deg);
     }
 
     .device-reader {
-      transform: translateY(-12px);
+      transform: translateY(-12px) rotate(1deg);
       margin-left: -8px;
     }
   }
 
   /* Dark Theme */
-  [data-theme="dark"] .hero-bg-layer {
-    opacity: 0.22;
-    filter: invert(1) brightness(0.85);
-  }
-
-  [data-theme="dark"] .device-frame {
+  :global([data-theme="dark"]) .device-frame {
     filter: drop-shadow(0 24px 44px rgba(0, 0, 0, 0.65));
   }
 
-  /* High Contrast WCAG AAA */
-  [data-theme="contrast"] .hero-bg-layer {
-    display: none;
-  }
-
-  [data-theme="contrast"] .hero-badge {
+  /* High Contrast WCAG AAA - No Outlines or Borders on Images */
+  :global([data-theme="contrast"]) .hero-badge {
     background-color: #FFFF00;
     color: #000000;
   }
 
-  [data-theme="contrast"] .btn-primary {
+  :global([data-theme="contrast"]) .btn-primary {
     background-color: #000000;
     border: 2px solid #FFFF00;
     color: #FFFF00;
   }
 
-  [data-theme="contrast"] .device-frame {
+  :global([data-theme="contrast"]) .device-frame {
     filter: none;
-    outline: 2px solid #FFFF00;
-    outline-offset: 4px;
-    border-radius: 24px;
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 </style>

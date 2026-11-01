@@ -1,0 +1,421 @@
+---
+import backgroundSvg from '../../assets/background.svg';
+import cameraImg from '../../assets/camera-screen.png';
+import readerImg from '../../assets/reader-screen.png';
+import uploadImg from '../../assets/UploadScreen.png';
+import { useTranslations, type Language } from '../../i18n/translations';
+
+interface Props {
+  lang?: Language;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="features" class="features-section" aria-labelledby="features-title">
+  <!-- Matching Luminous Silver/White Pattern on Dark Canvas -->
+  <div
+    class="features-bg-layer"
+    style={`background-image: url(${backgroundSvg.src})`}
+    aria-hidden="true"
+  ></div>
+
+  <div class="features-container container-max">
+    <div class="features-header">
+      <span class="features-badge font-khmer" data-i18n="features.badge">
+        {t('features.badge')}
+      </span>
+      <h2 id="features-title" class="features-heading type-h1" data-i18n="features.title">
+        {t('features.title')}
+      </h2>
+      <p class="features-subhead type-body-medium" data-i18n="features.subhead">
+        {t('features.subhead')}
+      </p>
+    </div>
+
+    <div class="features-list">
+      <!-- Feature 1: Live Guided Camera Scanner -->
+      <article class="feature-row row-normal">
+        <div class="feature-content">
+          <div class="feature-tag font-khmer" data-i18n="f1.tag">{t('f1.tag')}</div>
+          <h3 class="feature-title type-h2" data-i18n="f1.title">{t('f1.title')}</h3>
+          <ul class="feature-bullets">
+            <li>
+              <strong data-i18n="f1.b1.title">{t('f1.b1.title')}</strong><span data-i18n="f1.b1.desc">{t('f1.b1.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f1.b2.title">{t('f1.b2.title')}</strong><span data-i18n="f1.b2.desc">{t('f1.b2.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f1.b3.title">{t('f1.b3.title')}</strong><span data-i18n="f1.b3.desc">{t('f1.b3.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f1.b4.title">{t('f1.b4.title')}</strong><span data-i18n="f1.b4.desc">{t('f1.b4.desc')}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual" aria-hidden="true">
+          <div class="feature-device-frame">
+            <img
+              src={cameraImg.src}
+              alt="Live Guided Camera Scanner in SongKhem"
+              width={cameraImg.width}
+              height={cameraImg.height}
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </article>
+
+      <!-- Feature 2: Karaoke Document Reader -->
+      <article class="feature-row row-reverse">
+        <div class="feature-content">
+          <div class="feature-tag font-khmer" data-i18n="f2.tag">{t('f2.tag')}</div>
+          <h3 class="feature-title type-h2" data-i18n="f2.title">{t('f2.title')}</h3>
+          <ul class="feature-bullets">
+            <li>
+              <strong data-i18n="f2.b1.title">{t('f2.b1.title')}</strong><span data-i18n="f2.b1.desc">{t('f2.b1.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f2.b2.title">{t('f2.b2.title')}</strong><span data-i18n="f2.b2.desc">{t('f2.b2.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f2.b3.title">{t('f2.b3.title')}</strong><span data-i18n="f2.b3.desc">{t('f2.b3.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f2.b4.title">{t('f2.b4.title')}</strong><span data-i18n="f2.b4.desc">{t('f2.b4.desc')}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual" aria-hidden="true">
+          <div class="feature-device-frame">
+            <img
+              src={readerImg.src}
+              alt="Karaoke Document Reader in SongKhem"
+              width={readerImg.width}
+              height={readerImg.height}
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </article>
+
+      <!-- Feature 3: Universal Document & File Uploader (With Phone Bezel) -->
+      <article class="feature-row row-normal">
+        <div class="feature-content">
+          <div class="feature-tag font-khmer" data-i18n="f3.tag">{t('f3.tag')}</div>
+          <h3 class="feature-title type-h2" data-i18n="f3.title">{t('f3.title')}</h3>
+          <ul class="feature-bullets">
+            <li>
+              <strong data-i18n="f3.b1.title">{t('f3.b1.title')}</strong><span data-i18n="f3.b1.desc">{t('f3.b1.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f3.b2.title">{t('f3.b2.title')}</strong><span data-i18n="f3.b2.desc">{t('f3.b2.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f3.b3.title">{t('f3.b3.title')}</strong><span data-i18n="f3.b3.desc">{t('f3.b3.desc')}</span>
+            </li>
+            <li>
+              <strong data-i18n="f3.b4.title">{t('f3.b4.title')}</strong><span data-i18n="f3.b4.desc">{t('f3.b4.desc')}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="feature-visual" aria-hidden="true">
+          <div class="feature-device-frame feature-phone-bezel">
+            <img
+              src={uploadImg.src}
+              alt="Universal Document and File Uploader in SongKhem"
+              width={uploadImg.width}
+              height={uploadImg.height}
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Inverted Dynamic Palette Tokens:
+     Default / Light mode: Hero is Light -> Features is Charcoal Dark (#121316)
+     Dark mode:            Hero is Dark  -> Features is Crisp White   (#FFFFFF)
+     Contrast mode:        Both are WCAG AAA Pure Black & Yellow      (#000000 & #FFFF00)
+  */
+  .features-section {
+    --sec-bg: #121316;
+    --sec-text: #E3E3E3;
+    --sec-heading: #FFFFFF;
+    --sec-subhead: #C4C7C5;
+    --sec-accent: #A8C7FA;
+    --sec-badge-bg: #004A77;
+    --sec-badge-text: #C2E7FF;
+    --sec-badge-border: rgba(168, 199, 250, 0.25);
+    --sec-border: rgba(255, 255, 255, 0.08);
+    --sec-bezel: #272A31;
+    --sec-shadow: drop-shadow(0 24px 44px rgba(0, 0, 0, 0.75));
+    --sec-pattern-filter: invert(1) brightness(0.8);
+    --sec-pattern-opacity: 0.16;
+    --sec-bullet-glow: 0 0 8px rgba(168, 199, 250, 0.5);
+
+    position: relative;
+    padding: calc(var(--space-8) + var(--space-4)) 0 calc(var(--space-8) + var(--space-6));
+    background-color: var(--sec-bg);
+    color: var(--sec-text);
+    overflow: hidden;
+    scroll-margin-top: 84px;
+    border-top: 1px solid var(--sec-border);
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+
+  /* When Site Theme is Dark: Hero is Black/Dark, Feature Section Flips to Crisp White */
+  :global([data-theme="dark"]) .features-section {
+    --sec-bg: #FFFFFF;
+    --sec-text: #1F1F1F;
+    --sec-heading: #1F1F1F;
+    --sec-subhead: #444746;
+    --sec-accent: #005AC1;
+    --sec-badge-bg: #D3E3FD;
+    --sec-badge-text: #041E49;
+    --sec-badge-border: transparent;
+    --sec-border: rgba(0, 0, 0, 0.08);
+    --sec-bezel: #0E1117;
+    --sec-shadow: drop-shadow(0 20px 32px rgba(0, 0, 0, 0.14));
+    --sec-pattern-filter: none;
+    --sec-pattern-opacity: 0.18;
+    --sec-bullet-glow: 0 0 6px rgba(0, 90, 193, 0.35);
+  }
+
+  /* When Site Theme is Contrast: High-Contrast Pure Black & Yellow (WCAG AAA) */
+  :global([data-theme="contrast"]) .features-section {
+    --sec-bg: #000000;
+    --sec-text: #FFFFFF;
+    --sec-heading: #FFFFFF;
+    --sec-subhead: #FFFF00;
+    --sec-accent: #FFFF00;
+    --sec-badge-bg: #FFFF00;
+    --sec-badge-text: #000000;
+    --sec-badge-border: transparent;
+    --sec-border: #FFFF00;
+    --sec-bezel: #FFFF00;
+    --sec-shadow: none;
+    --sec-pattern-filter: invert(94%) sepia(93%) saturate(1352%) hue-rotate(359deg) brightness(106%) contrast(107%);
+    --sec-pattern-opacity: 0.28;
+    --sec-bullet-glow: none;
+    border-top: 2px solid #FFFF00;
+    border-bottom: 2px solid #FFFF00;
+  }
+
+  /* Pattern Backdrop */
+  .features-bg-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-repeat: repeat;
+    background-size: 560px auto;
+    background-position: center;
+    opacity: var(--sec-pattern-opacity);
+    filter: var(--sec-pattern-filter);
+    z-index: 0;
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, #000 65%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, #000 65%, transparent 100%);
+    transition: opacity 0.25s ease, filter 0.25s ease;
+  }
+
+  .features-container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .features-header {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto var(--space-8);
+  }
+
+  /* Dynamic Badge */
+  .features-badge {
+    display: inline-block;
+    background-color: var(--sec-badge-bg);
+    color: var(--sec-badge-text);
+    border: 1px solid var(--sec-badge-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: var(--space-3);
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+
+  .features-heading {
+    color: var(--sec-heading);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: var(--space-2);
+    transition: color 0.25s ease;
+  }
+
+  .features-subhead {
+    color: var(--sec-subhead);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    transition: color 0.25s ease;
+  }
+
+  /* Tighter Gap Between Features */
+  .features-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+
+  /* Zig-Zag 2-Column Grid */
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .feature-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  /* Dynamic Accent Tag */
+  .feature-tag {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--sec-accent);
+    letter-spacing: 0.4px;
+    transition: color 0.25s ease;
+  }
+
+  .feature-title {
+    font-size: 1.625rem;
+    color: var(--sec-heading);
+    font-weight: 700;
+    line-height: 1.25;
+    transition: color 0.25s ease;
+  }
+
+  .feature-bullets {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+  }
+
+  .feature-bullets li {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--sec-subhead);
+    position: relative;
+    padding-left: var(--space-4);
+    transition: color 0.25s ease;
+  }
+
+  /* Glowing Accent Dot */
+  .feature-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--sec-accent);
+    box-shadow: var(--sec-bullet-glow);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .feature-bullets strong {
+    color: var(--sec-heading);
+    font-weight: 600;
+    transition: color 0.25s ease;
+  }
+
+  .feature-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Transparent Phone Asset Frame with Elevation Shadow */
+  .feature-device-frame {
+    position: relative;
+    width: 100%;
+    max-width: 290px;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    filter: var(--sec-shadow);
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+
+  .feature-device-frame:hover {
+    transform: translateY(-4px);
+  }
+
+  .feature-device-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: transparent !important;
+  }
+
+  /* Phone Bezel specifically for UploadScreen.png */
+  .feature-phone-bezel {
+    border: 9px solid var(--sec-bezel) !important;
+    border-radius: 36px !important;
+    overflow: hidden !important;
+    background-color: #000000 !important;
+    filter: var(--sec-shadow);
+    transition: border-color 0.25s ease, filter 0.25s ease;
+  }
+
+  .feature-phone-bezel img {
+    border-radius: 26px;
+  }
+
+  /* Desktop 2-Column Zig-Zag Alternate */
+  @media (min-width: 1024px) {
+    .feature-row {
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--space-8);
+    }
+
+    .row-reverse {
+      grid-template-columns: 1fr 1.2fr;
+    }
+
+    .row-reverse .feature-content {
+      order: 2;
+    }
+
+    .row-reverse .feature-visual {
+      order: 1;
+      justify-content: flex-start;
+    }
+
+    .row-normal .feature-visual {
+      justify-content: flex-end;
+    }
+  }
+
+  :global([data-theme="contrast"]) .feature-device-frame {
+    filter: none !important;
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  :global([data-theme="contrast"]) .feature-phone-bezel {
+    border: 3px solid #FFFF00 !important;
+    filter: none !important;
+  }
+</style>
