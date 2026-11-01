@@ -1,0 +1,147 @@
+---
+// SiteFooter.astro: Semantic footer with ecosystem navigation & accessibility notice
+---
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container-max footer-inner">
+    <div class="footer-column brand-col">
+      <div class="footer-brand">
+        <span class="brand-title">SongKhem</span>
+        <span class="brand-tagline">Stories & Guides</span>
+      </div>
+      <p class="footer-mission type-caption">
+        Public editorial platform bridging human storytelling and assistive technology. Designed for high readability, minimal friction, and WCAG AAA compliance for vision impaired users.
+      </p>
+    </div>
+
+    <div class="footer-column">
+      <h2 class="footer-heading type-caption">Ecosystem</h2>
+      <ul class="footer-links">
+        <li><a href="https://app.songkhem.com" target="_blank" rel="noopener noreferrer">Assistive Workspace</a></li>
+        <li><a href="/stories">Editorial Stories</a></li>
+        <li><a href="/about">Mission & Values</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h2 class="footer-heading type-caption">Accessibility & Scripts</h2>
+      <p class="footer-meta type-caption">
+        Optimized for dual-language typography (Khmer & English) with diacritic collision protection.
+      </p>
+      <p class="footer-meta type-caption">
+        Standard: WCAG AAA High Contrast compliant.
+      </p>
+    </div>
+  </div>
+
+  <div class="container-max footer-bottom">
+    <p class="copyright type-caption">
+      &copy; {new Date().getFullYear()} SongKhem. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: var(--md-sys-color-surface-container);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-5);
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    gap: var(--space-6);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .brand-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .brand-tagline {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
+    text-transform: uppercase;
+  }
+
+  .footer-mission {
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 420px;
+    line-height: 1.6;
+  }
+
+  .footer-heading {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-3);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer-links a {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.875rem;
+    transition: color 0.15s ease;
+  }
+
+  .footer-links a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .footer-meta {
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: var(--space-2);
+    line-height: 1.5;
+  }
+
+  .footer-bottom {
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .copyright {
+    color: var(--md-sys-color-outline);
+  }
+
+  [data-theme="contrast"] .site-footer {
+    background-color: #000000;
+    border-top: 2px solid #FFFF00;
+  }
+
+  [data-theme="contrast"] .brand-title,
+  [data-theme="contrast"] .footer-heading,
+  [data-theme="contrast"] .footer-links a,
+  [data-theme="contrast"] .copyright {
+    color: #FFFF00;
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+</style>

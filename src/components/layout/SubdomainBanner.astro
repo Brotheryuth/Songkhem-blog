@@ -1,0 +1,83 @@
+---
+// SubdomainBanner.astro: Directs visitors to the sister assistive web application
+import { useTranslations, type Language } from '../../i18n/translations';
+
+interface Props {
+  lang?: Language;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<aside class="subdomain-banner" aria-label="Sister application link">
+  <div class="container-max banner-inner">
+    <p class="banner-text">
+      <span class="banner-badge" data-i18n="banner.badge">{t('banner.badge')}</span>
+      <span data-i18n="banner.title">{t('banner.title')}</span>
+      <a href="https://app.songkhem.com" class="banner-link" target="_blank" rel="noopener noreferrer" data-i18n="banner.cta">
+        {t('banner.cta')}
+      </a>
+    </p>
+  </div>
+</aside>
+
+<style>
+  .subdomain-banner {
+    background-color: var(--md-sys-color-surface-container);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--space-3);
+    padding: var(--space-2) 0;
+  }
+
+  .banner-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .banner-text {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--md-sys-color-on-surface-variant);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .banner-badge {
+    background-color: var(--color-primary-container);
+    color: var(--color-primary-text);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .banner-link {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .banner-link:hover {
+    opacity: 0.85;
+  }
+
+  [data-theme="contrast"] .subdomain-banner {
+    background-color: #000000;
+    border-bottom: 2px solid #FFFF00;
+  }
+
+  [data-theme="contrast"] .banner-badge {
+    background-color: #FFFF00;
+    color: #000000;
+  }
+
+  [data-theme="contrast"] .banner-link {
+    color: #FFFF00;
+  }
+</style>

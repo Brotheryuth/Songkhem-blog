@@ -1,0 +1,241 @@
+---
+import logoImg from '../../assets/logo.png';
+import { useTranslations, type Language } from '../../i18n/translations';
+
+interface Props {
+  currentPath?: string;
+  lang?: Language;
+}
+
+const { currentPath = '/', lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<header class="site-header" role="banner">
+  <div class="container-max header-inner">
+    <div class="brand-group">
+      <a href={lang === 'km' ? '/km' : '/'} class="brand-link" aria-label="SongKhem home">
+        <img src={logoImg.src} alt="SongKhem logo" width="34" height="34" class="brand-logo" />
+        <span class="brand-title">SongKhem</span>
+      </a>
+    </div>
+
+    <nav class="site-nav" aria-label="Main Navigation">
+      <ul class="nav-list">
+        <li>
+          <a
+            href={lang === 'km' ? '/km' : '/'}
+            class:list={['nav-link', { active: currentPath === '/' || currentPath === '/km' }]}
+            data-i18n="nav.home"
+          >
+            {t('nav.home')}
+          </a>
+        </li>
+        <li>
+          <a
+            href={lang === 'km' ? '/km/stories' : '/stories'}
+            class:list={['nav-link', { active: currentPath.includes('/stories') }]}
+            data-i18n="nav.stories"
+          >
+            {t('nav.stories')}
+          </a>
+        </li>
+        <li>
+          <a
+            href={lang === 'km' ? '/km/about' : '/about'}
+            class:list={['nav-link', { active: currentPath.includes('/about') }]}
+            data-i18n="nav.about"
+          >
+            {t('nav.about')}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <!-- Instant Client-Side Language Toggle -->
+      <button
+        id="lang-toggle"
+        class="lang-switch"
+        type="button"
+        aria-label="Toggle language between English and Khmer"
+      >
+        <span id="lang-label" data-i18n="lang.label">{t('lang.label')}</span>
+      </button>
+
+      <!-- Theme Switcher -->
+      <button
+        id="theme-toggle"
+        class="theme-button"
+        type="button"
+        aria-label="Toggle visual theme"
+        title="Toggle Light / Dark / High Contrast mode"
+      >
+        <span class="theme-label" id="theme-label">Theme: Light</span>
+      </button>
+
+      <!-- Primary Try Now CTA -->
+      <a
+        href="https://app.songkhem.com"
+        class="app-button"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-i18n="hero.cta"
+      >
+        {t('hero.cta')}
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    height: 68px;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+  }
+
+  .header-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .brand-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .brand-logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .brand-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--color-primary);
+  }
+
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .nav-link {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
+    padding: var(--space-2) 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--md-sys-color-on-surface);
+    border-bottom-color: var(--color-primary);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .lang-switch {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .lang-switch:hover {
+    background-color: var(--color-surface-container);
+  }
+
+  .theme-button {
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .theme-button:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+  }
+
+  .app-button {
+    padding: 8px 18px;
+    background-color: var(--color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-radius: var(--radius-pill);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .app-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  [data-theme="contrast"] .site-header {
+    border-bottom: 2px solid #FFFF00;
+    background-color: #000000;
+  }
+
+  [data-theme="contrast"] .brand-title,
+  [data-theme="contrast"] .nav-link.active,
+  [data-theme="contrast"] .lang-switch,
+  [data-theme="contrast"] .app-button {
+    color: #FFFF00;
+  }
+
+  [data-theme="contrast"] .lang-switch,
+  [data-theme="contrast"] .theme-button {
+    border-color: #FFFF00;
+    color: #FFFF00;
+    background-color: #000000;
+  }
+
+  [data-theme="contrast"] .app-button {
+    background-color: #000000;
+    border: 2px solid #FFFF00;
+  }
+
+  @media (max-width: 768px) {
+    .nav-list {
+      gap: var(--space-3);
+    }
+    .theme-button {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+    }
+  }
+</style>

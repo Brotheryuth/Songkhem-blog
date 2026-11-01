@@ -1,0 +1,135 @@
+---
+import '../styles/reset.css';
+import '../styles/design-system.css';
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import { ui, type Language } from '../i18n/translations';
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentPath?: string;
+  lang?: Language;
+}
+
+const {
+  title = 'SongKhem | Assistive AI for Khmer',
+  description = 'Transforming physical Khmer documents into real-time spoken audio and synchronized karaoke reading for vision impaired users.',
+  currentPath = '/',
+  lang = 'en',
+} = Astro.props;
+
+const i18nPayload = JSON.stringify(ui);
+---
+
+<!doctype html>
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Web Logo / Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="shortcut icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
+    <!-- Top Nav Bar (Home, Stories, About us, Try now) -->
+    <SiteHeader currentPath={currentPath} lang={lang} />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <SiteFooter />
+
+    <script is:inline define:vars={{ i18nPayload }}>
+      // 1. Instant Client-Side Theme Engine
+      const THEMES = ['light', 'dark', 'contrast'];
+      const LABELS = {
+        light: 'Theme: Light',
+        dark: 'Theme: Dark',
+        contrast: 'Theme: Contrast',
+      };
+
+      const savedTheme = localStorage.getItem('songkhem-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+
+      function updateThemeUI(theme) {
+        const labelEl = document.getElementById('theme-label');
+        if (labelEl) {
+          labelEl.textContent = LABELS[theme] || 'Theme: Light';
+        }
+      }
+
+      // 2. Instant Client-Side i18n Engine (0ms latency, zero reload lag)
+      const translations = JSON.parse(i18nPayload);
+
+      function applyLanguage(targetLang) {
+        document.documentElement.setAttribute('lang', targetLang);
+        localStorage.setItem('songkhem-lang', targetLang);
+
+        const dict = translations[targetLang] || translations['en'];
+        const elements = document.querySelectorAll('[data-i18n]');
+
+        elements.forEach((el) => {
+          const key = el.getAttribute('data-i18n');
+          if (key && dict[key]) {
+            el.textContent = dict[key];
+          }
+        });
+
+        // Update URL path seamlessly without page reload
+        const currentPath = window.location.pathname;
+        if (targetLang === 'km' && !currentPath.startsWith('/km')) {
+          const newPath = currentPath === '/' ? '/km' : '/km' + currentPath;
+          window.history.replaceState({}, '', newPath);
+        } else if (targetLang === 'en' && currentPath.startsWith('/km')) {
+          const newPath = currentPath.replace(/^\/km/, '') || '/';
+          window.history.replaceState({}, '', newPath);
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        updateThemeUI(savedTheme);
+
+        // Language toggle setup
+        const langToggleBtn = document.getElementById('lang-toggle');
+        const urlLang = window.location.pathname.startsWith('/km') ? 'km' : null;
+        const initialLang = urlLang || localStorage.getItem('songkhem-lang') || 'en';
+
+        // Sync initial state if needed
+        if (initialLang !== document.documentElement.getAttribute('lang')) {
+          applyLanguage(initialLang);
+        }
+
+        if (langToggleBtn) {
+          langToggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const current = document.documentElement.getAttribute('lang') || 'en';
+            const next = current === 'en' ? 'km' : 'en';
+            applyLanguage(next);
+          });
+        }
+
+        // Theme toggle setup
+        const toggleBtn = document.getElementById('theme-toggle');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const nextIndex = (THEMES.indexOf(current) + 1) % THEMES.length;
+            const nextTheme = THEMES[nextIndex];
+
+            document.documentElement.setAttribute('data-theme', nextTheme);
+            localStorage.setItem('songkhem-theme', nextTheme);
+            updateThemeUI(nextTheme);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
