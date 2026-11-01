@@ -1,0 +1,281 @@
+---
+import backgroundSvg from '../../assets/background.svg';
+import cameraImg from '../../assets/camera-screen.png';
+import readerImg from '../../assets/reader-screen.png';
+import { useTranslations, type Language } from '../../i18n/translations';
+
+interface Props {
+  lang?: Language;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="hero" class="hero-section" aria-label="Introduction">
+  <!-- Prominently Visible Khmer Pattern Backdrop -->
+  <div
+    class="hero-bg-layer"
+    style={`background-image: url(${backgroundSvg.src})`}
+    aria-hidden="true"
+  ></div>
+
+  <div class="hero-container container-max">
+    <!-- Left Column: Copy -->
+    <div class="hero-content">
+      <div class="hero-badge font-khmer" data-i18n="hero.badge">
+        {t('hero.badge')}
+      </div>
+
+      <h1 class="hero-title" data-i18n="hero.title" class:list={[{ 'font-khmer': lang === 'km' }]}>
+        {t('hero.title')}
+      </h1>
+
+      <p class="hero-description" data-i18n="hero.description" class:list={[{ 'font-khmer': lang === 'km' }]}>
+        {t('hero.description')}
+      </p>
+
+      <div class="hero-actions">
+        <a
+          href="https://app.songkhem.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-primary"
+          data-i18n="hero.cta"
+        >
+          {t('hero.cta')}
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Dual Screens (Bigger & Closer Together) -->
+    <div class="hero-visual" aria-hidden="true">
+      <div class="device-frame device-camera">
+        <img
+          src={cameraImg.src}
+          alt="SongKhem Camera Scanner"
+          width={cameraImg.width}
+          height={cameraImg.height}
+          loading="eager"
+        />
+      </div>
+      <div class="device-frame device-reader">
+        <img
+          src={readerImg.src}
+          alt="SongKhem Karaoke Document Reader"
+          width={readerImg.width}
+          height={readerImg.height}
+          loading="eager"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    position: relative;
+    padding: var(--space-8) 0 calc(var(--space-8) + var(--space-4));
+    background-color: var(--color-surface);
+    overflow: hidden;
+  }
+
+  /* Clear, Prominently Visible Authentic Pattern */
+  .hero-bg-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-repeat: repeat;
+    background-size: 560px auto;
+    background-position: center;
+    opacity: 0.22; /* Vivid and noticeable */
+    z-index: 0;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 60%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 60%, transparent 100%);
+  }
+
+  .hero-container {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  /* Left Column */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    max-width: 540px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.35rem, 5vw, 3.6rem);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .hero-description {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    padding-top: var(--space-2);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 36px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-primary);
+    color: var(--md-sys-color-on-primary);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.92;
+    transform: translateY(-2px);
+  }
+
+  /* Right Column: Dual Screens (Bigger & Closer Together) */
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    padding: var(--space-5) 0;
+    width: 100%;
+  }
+
+  .device-frame {
+    position: relative;
+    width: 50%;
+    max-width: 330px;
+    filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.16));
+    transition: transform 0.25s ease;
+  }
+
+  .device-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Staggered cascade */
+  .device-camera {
+    transform: translateY(28px);
+    z-index: 1;
+  }
+
+  .device-reader {
+    transform: translateY(-28px);
+    z-index: 2;
+    margin-left: -16px;
+  }
+
+  /* Desktop */
+  @media (min-width: 1024px) {
+    .hero-container {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--space-6);
+    }
+
+    .device-frame {
+      max-width: 340px;
+    }
+
+    .device-reader {
+      margin-left: -24px;
+    }
+  }
+
+  /* Tablet */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero-content {
+      max-width: 680px;
+    }
+
+    .device-frame {
+      max-width: 290px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 767px) {
+    .hero-visual {
+      gap: 4px;
+    }
+
+    .device-frame {
+      max-width: 180px;
+    }
+
+    .device-camera {
+      transform: translateY(12px);
+    }
+
+    .device-reader {
+      transform: translateY(-12px);
+      margin-left: -8px;
+    }
+  }
+
+  /* Dark Theme */
+  [data-theme="dark"] .hero-bg-layer {
+    opacity: 0.22;
+    filter: invert(1) brightness(0.85);
+  }
+
+  [data-theme="dark"] .device-frame {
+    filter: drop-shadow(0 24px 44px rgba(0, 0, 0, 0.65));
+  }
+
+  /* High Contrast WCAG AAA */
+  [data-theme="contrast"] .hero-bg-layer {
+    display: none;
+  }
+
+  [data-theme="contrast"] .hero-badge {
+    background-color: #FFFF00;
+    color: #000000;
+  }
+
+  [data-theme="contrast"] .btn-primary {
+    background-color: #000000;
+    border: 2px solid #FFFF00;
+    color: #FFFF00;
+  }
+
+  [data-theme="contrast"] .device-frame {
+    filter: none;
+    outline: 2px solid #FFFF00;
+    outline-offset: 4px;
+    border-radius: 24px;
+  }
+</style>
