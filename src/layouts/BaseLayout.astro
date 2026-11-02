@@ -129,6 +129,48 @@ const i18nPayload = JSON.stringify(ui);
             updateThemeUI(nextTheme);
           });
         }
+
+        // 3. Apple-Style Active Section Tracker (Scroll Spy)
+        const navLinks = document.querySelectorAll('.nav-link[data-nav-target]');
+        const trackedSections = document.querySelectorAll('section[id]');
+
+        function setActiveNav(targetId) {
+          navLinks.forEach((link) => {
+            if (link.getAttribute('data-nav-target') === targetId) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+
+        if (trackedSections.length > 0 && navLinks.length > 0) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  setActiveNav(entry.target.id);
+                }
+              });
+            },
+            {
+              root: null,
+              rootMargin: '-20% 0px -55% 0px',
+              threshold: 0,
+            }
+          );
+
+          trackedSections.forEach((sec) => observer.observe(sec));
+        }
+
+        navLinks.forEach((link) => {
+          link.addEventListener('click', () => {
+            const target = link.getAttribute('data-nav-target');
+            if (target) {
+              setActiveNav(target);
+            }
+          });
+        });
       });
     </script>
   </body>
