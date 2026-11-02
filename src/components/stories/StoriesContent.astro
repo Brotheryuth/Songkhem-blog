@@ -1,6 +1,13 @@
 ---
 import PageHero from '../layout/PageHero.astro';
-import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
+import { useTranslations, type Language } from '../../i18n/translations';
+
+import interviewee1 from '../../assets/UserInterview/interviewee1.png';
+import interviewee2 from '../../assets/UserInterview/interviewee2.png';
+import keSprint from '../../assets/KE/sprint.png';
+import keUni from '../../assets/KE/Uni.png';
+import visit1 from '../../assets/SchoolVisit/visit1.png';
+import visit2 from '../../assets/SchoolVisit/visit2.png';
 
 interface Props {
   lang?: Language;
@@ -8,27 +15,6 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
-
-const stories: { id: string; tag: TranslationKey; title: TranslationKey; body: TranslationKey[] }[] = [
-  {
-    id: 'mission',
-    tag: 'stories.mission.tag',
-    title: 'stories.mission.title',
-    body: ['stories.mission.p1', 'stories.mission.p2'],
-  },
-  {
-    id: 'reading',
-    tag: 'stories.reading.tag',
-    title: 'stories.reading.title',
-    body: ['stories.reading.p1', 'stories.reading.p2'],
-  },
-  {
-    id: 'script',
-    tag: 'stories.script.tag',
-    title: 'stories.script.title',
-    body: ['stories.script.p1', 'stories.script.p2'],
-  },
-];
 ---
 
 <PageHero
@@ -38,57 +24,275 @@ const stories: { id: string; tag: TranslationKey; title: TranslationKey; body: T
   description="stories.description"
 />
 
-<div class="container-feed stories">
-  {stories.map((story) => (
-    <article class="story" aria-labelledby={`story-${story.id}`}>
-      <p class="story-tag type-caption" data-i18n={story.tag}>{t(story.tag)}</p>
-      <div>
-        <h2 id={`story-${story.id}`} class="type-h2" data-i18n={story.title}>{t(story.title)}</h2>
-        <div class="story-body type-body-longform">
-          {story.body.map((paragraph) => (
-            <p data-i18n={paragraph}>{t(paragraph)}</p>
-          ))}
+<div class="stories-journey-wrap">
+  <div class="container-max stories-container">
+    <!-- Journey Stage 1: User Interview (Z-Shape: Content Left | Visual Right) -->
+    <article class="journey-row row-normal">
+      <div class="journey-content">
+        <span class="journey-tag" data-i18n="stories.stage1.tag">{t('stories.stage1.tag')}</span>
+        <h2 class="journey-title" data-i18n="stories.stage1.title">{t('stories.stage1.title')}</h2>
+      </div>
+
+      <div class="journey-visual">
+        <div class="gallery-grid dual-photos">
+          <figure class="photo-card">
+            <img
+              src={interviewee1.src}
+              alt="SongKhem user interview session with vision impaired community member"
+              loading="lazy"
+              width={interviewee1.width}
+              height={interviewee1.height}
+            />
+          </figure>
+          <figure class="photo-card">
+            <img
+              src={interviewee2.src}
+              alt="Community document reading workflow interview"
+              loading="lazy"
+              width={interviewee2.width}
+              height={interviewee2.height}
+            />
+          </figure>
         </div>
       </div>
     </article>
-  ))}
 
-  <p class="stories-more type-body-medium" data-i18n="stories.more">{t('stories.more')}</p>
+    <!-- Journey Stage 2: Khmer Enterprise (Z-Shape: Visual Left | Content Right) -->
+    <article class="journey-row row-reverse">
+      <div class="journey-content">
+        <span class="journey-tag" data-i18n="stories.stage2.tag">{t('stories.stage2.tag')}</span>
+        <h2 class="journey-title" data-i18n="stories.stage2.title">{t('stories.stage2.title')}</h2>
+      </div>
+
+      <div class="journey-visual">
+        <div class="gallery-grid dual-photos ke-photos">
+          <figure class="photo-card">
+            <img
+              src={keUni.src}
+              alt="Khmer Enterprise university sprint presentations"
+              loading="lazy"
+              width={keUni.width}
+              height={keUni.height}
+            />
+          </figure>
+          <figure class="photo-card">
+            <img
+              src={keSprint.src}
+              alt="Sprint product roadmap and technical architecture board"
+              loading="lazy"
+              width={keSprint.width}
+              height={keSprint.height}
+            />
+          </figure>
+        </div>
+      </div>
+    </article>
+
+    <!-- Journey Stage 3: School Visit (Z-Shape: Content Left | Visual Right) -->
+    <article class="journey-row row-normal">
+      <div class="journey-content">
+        <span class="journey-tag" data-i18n="stories.stage3.tag">{t('stories.stage3.tag')}</span>
+        <h2 class="journey-title" data-i18n="stories.stage3.title">{t('stories.stage3.title')}</h2>
+      </div>
+
+      <div class="journey-visual">
+        <div class="gallery-grid dual-photos">
+          <figure class="photo-card">
+            <img
+              src={visit1.src}
+              alt="School classroom demonstration of SongKhem assistive reading"
+              loading="lazy"
+              width={visit1.width}
+              height={visit1.height}
+            />
+          </figure>
+          <figure class="photo-card">
+            <img
+              src={visit2.src}
+              alt="Students testing real-time Khmer audio playback in classroom"
+              loading="lazy"
+              width={visit2.width}
+              height={visit2.height}
+            />
+          </figure>
+        </div>
+      </div>
+    </article>
+  </div>
 </div>
 
 <style>
-  .stories {
-    padding-bottom: var(--space-8);
+  .stories-journey-wrap {
+    padding: var(--space-7) 0 var(--space-8);
   }
 
-  .story {
-    display: grid;
-    gap: var(--space-2);
-    padding: var(--space-7) 0;
-    border-top: 1px solid var(--color-border);
-  }
-
-  .story-tag {
-    color: var(--md-sys-color-on-surface-variant);
-  }
-
-  .story-body {
+  .stories-container {
     display: flex;
     flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  /* Z-Shape Grid Row */
+  .journey-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: center;
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .journey-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* Content Column */
+  .journey-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .journey-tag {
+    display: inline-block;
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  .journey-title {
+    font-size: clamp(1.85rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* Visual Column */
+  .journey-visual {
+    width: 100%;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: var(--space-4);
-    margin-top: var(--space-4);
   }
 
-  .stories-more {
-    padding-top: var(--space-6);
-    border-top: 1px solid var(--color-border);
-    color: var(--md-sys-color-on-surface-variant);
+  /* Dual Landscape Photo Card */
+  .photo-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 0;
+    background-color: var(--md-sys-color-surface-container);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
 
-  @media (min-width: 768px) {
-    .story {
-      grid-template-columns: 180px 1fr;
-      gap: var(--space-6);
+  .photo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.14);
+  }
+
+  .photo-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    aspect-ratio: 16 / 10;
+  }
+
+  /* KE Sprint Layout Tuning */
+  .ke-photos .photo-card img {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* Desktop Z-Shape Layout */
+  @media (min-width: 900px) {
+    .journey-row {
+      grid-template-columns: 1fr 1.5fr;
+      gap: var(--space-8);
+      padding-bottom: var(--space-8);
     }
+
+    .row-reverse {
+      grid-template-columns: 1.5fr 1fr;
+    }
+
+    .row-reverse .journey-content {
+      order: 2;
+    }
+
+    .row-reverse .journey-visual {
+      order: 1;
+    }
+
+    .dual-photos {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .photo-card img {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* Dark Theme */
+  :global([data-theme="dark"]) .journey-row {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="dark"]) .journey-tag {
+    background-color: #004A77;
+    color: #C2E7FF;
+  }
+
+  :global([data-theme="dark"]) .journey-title {
+    color: #FFFFFF;
+  }
+
+  :global([data-theme="dark"]) .photo-card {
+    background-color: #1A1C1E;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 42px rgba(0, 0, 0, 0.65);
+  }
+
+  :global([data-theme="dark"]) .photo-card:hover {
+    box-shadow: 0 26px 50px rgba(0, 0, 0, 0.85);
+  }
+
+  /* High Contrast WCAG AAA */
+  :global([data-theme="contrast"]) .journey-row {
+    border-bottom: 2px solid #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .journey-tag {
+    background-color: #FFFF00;
+    color: #000000;
+  }
+
+  :global([data-theme="contrast"]) .journey-title {
+    color: #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .photo-card {
+    border: 2px solid #FFFF00;
+    box-shadow: none;
+    background-color: #000000;
+  }
+
+  :global([data-theme="contrast"]) .photo-card:hover {
+    transform: none;
+    box-shadow: none;
   }
 </style>
