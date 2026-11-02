@@ -9,10 +9,10 @@ interface Props {
 
 const { currentPath = '/', lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
-const homePath = lang === 'km' ? '/km' : '/';
+const homePath = lang === 'km' ? '/km#hero' : '/#hero';
 const featuresPath = lang === 'km' ? '/km#features' : '/#features';
-const storiesPath = lang === 'km' ? '/km/stories' : '/stories';
-const aboutPath = lang === 'km' ? '/km/about' : '/about';
+const storiesPath = lang === 'km' ? '/km#stories' : '/#stories';
+const aboutPath = lang === 'km' ? '/km#about' : '/#about';
 ---
 
 <header class="site-header" role="banner">
@@ -24,12 +24,14 @@ const aboutPath = lang === 'km' ? '/km/about' : '/about';
       </a>
     </div>
 
+    <!-- Apple-Style Segmented Navigation Bar -->
     <nav class="site-nav" aria-label="Main Navigation">
       <ul class="nav-list">
         <li>
           <a
             href={homePath}
-            class:list={['nav-link', { active: currentPath === '/' || currentPath === '/km' }]}
+            class="nav-link active"
+            data-nav-target="hero"
             data-i18n="nav.home"
           >
             {t('nav.home')}
@@ -39,6 +41,7 @@ const aboutPath = lang === 'km' ? '/km/about' : '/about';
           <a
             href={featuresPath}
             class="nav-link"
+            data-nav-target="features"
             data-i18n="nav.features"
           >
             {t('nav.features')}
@@ -47,7 +50,8 @@ const aboutPath = lang === 'km' ? '/km/about' : '/about';
         <li>
           <a
             href={storiesPath}
-            class:list={['nav-link', { active: currentPath.includes('/stories') }]}
+            class="nav-link"
+            data-nav-target="stories"
             data-i18n="nav.stories"
           >
             {t('nav.stories')}
@@ -56,7 +60,8 @@ const aboutPath = lang === 'km' ? '/km/about' : '/about';
         <li>
           <a
             href={aboutPath}
-            class:list={['nav-link', { active: currentPath.includes('/about') }]}
+            class="nav-link"
+            data-nav-target="about"
             data-i18n="nav.about"
           >
             {t('nav.about')}
@@ -105,7 +110,7 @@ const aboutPath = lang === 'km' ? '/km/about' : '/about';
 
       <!-- Primary Try Now CTA -->
       <a
-        href="https://app.songkhem.com"
+        href="https://ocr-for-impaired-user.vercel.app"
         class="app-button"
         target="_blank"
         rel="noopener noreferrer"
@@ -161,25 +166,70 @@ const aboutPath = lang === 'km' ? '/km/about' : '/about';
     color: var(--color-primary);
   }
 
+  /* Apple-Style Segmented Capsule Navigation */
   .nav-list {
     display: flex;
     align-items: center;
-    gap: var(--space-5);
+    gap: 2px;
+    background-color: var(--md-sys-color-surface-container);
+    padding: 3px 4px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
   }
 
   .nav-link {
-    font-size: 0.9375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
     font-weight: 500;
     color: var(--md-sys-color-on-surface-variant);
-    padding: var(--space-2) 0;
-    border-bottom: 2px solid transparent;
-    transition: color 0.15s ease, border-color 0.15s ease;
+    padding: 6px 16px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .nav-link:hover,
-  .nav-link.active {
+  .nav-link:hover {
     color: var(--md-sys-color-on-surface);
-    border-bottom-color: var(--color-primary);
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="dark"]) .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+  }
+
+  /* Apple Active Pill Indicator */
+  .nav-link.active {
+    background-color: #FFFFFF;
+    color: #000000;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="dark"]) .nav-link.active {
+    background-color: #282A2D;
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  :global([data-theme="contrast"]) .nav-list {
+    background-color: #000000;
+    border: 2px solid #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .nav-link {
+    color: #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .nav-link.active {
+    background-color: #FFFF00;
+    color: #000000 !important;
+    font-weight: 700;
+    box-shadow: none;
   }
 
   .header-actions {
