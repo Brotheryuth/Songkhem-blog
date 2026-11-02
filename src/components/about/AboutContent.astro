@@ -1,7 +1,6 @@
 ---
 import cameraImg from '../../assets/camera-screen.png';
 import readerImg from '../../assets/reader-screen.png';
-import PageHero from '../layout/PageHero.astro';
 import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
 
 interface Props {
@@ -24,14 +23,12 @@ const values: { title: TranslationKey; body: TranslationKey }[] = [
 ];
 ---
 
-<PageHero
-  lang={lang}
-  badge="about.badge"
-  title="about.title"
-  description="about.description"
-/>
-
-<section class="about-section" aria-labelledby="about-why">
+<section id="about" class="about-section" aria-labelledby="about-why">
+  <div class="container-feed about-header">
+    <span class="about-badge" data-i18n="about.badge">{t('about.badge')}</span>
+    <h2 id="about-title" class="type-display about-heading" data-i18n="about.title">{t('about.title')}</h2>
+    <p class="about-subhead type-body-longform" data-i18n="about.description">{t('about.description')}</p>
+  </div>
   <div class="container-feed why-grid">
     <h2 id="about-why" class="type-h2" data-i18n="about.why.title">{t('about.why.title')}</h2>
     <div class="why-body type-body-longform">
@@ -97,7 +94,7 @@ const values: { title: TranslationKey; body: TranslationKey }[] = [
   <div class="container-feed cta">
     <h2 id="about-cta" class="type-h2" data-i18n="about.cta.title">{t('about.cta.title')}</h2>
     <a
-      href="https://app.songkhem.com"
+      href="https://ocr-for-impaired-user.vercel.app"
       target="_blank"
       rel="noopener noreferrer"
       class="btn-primary"
@@ -109,7 +106,30 @@ const values: { title: TranslationKey; body: TranslationKey }[] = [
 </section>
 
 <style>
+    .about-header {
+    margin-bottom: var(--space-7);
+  }
+  .about-badge {
+    display: inline-block;
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+  }
+  .about-heading {
+    margin-bottom: var(--space-2);
+  }
+  .about-subhead {
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 680px;
+  }
   .about-section {
+    scroll-margin-top: 84px;
     padding: var(--space-8) 0;
   }
 
