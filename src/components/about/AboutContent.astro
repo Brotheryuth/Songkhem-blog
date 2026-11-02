@@ -1,0 +1,255 @@
+---
+import cameraImg from '../../assets/camera-screen.png';
+import readerImg from '../../assets/reader-screen.png';
+import PageHero from '../layout/PageHero.astro';
+import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
+
+interface Props {
+  lang?: Language;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+
+const steps: { title: TranslationKey; body: TranslationKey }[] = [
+  { title: 'about.how.step1.title', body: 'about.how.step1.body' },
+  { title: 'about.how.step2.title', body: 'about.how.step2.body' },
+  { title: 'about.how.step3.title', body: 'about.how.step3.body' },
+];
+
+const values: { title: TranslationKey; body: TranslationKey }[] = [
+  { title: 'about.values.access.title', body: 'about.values.access.body' },
+  { title: 'about.values.khmer.title', body: 'about.values.khmer.body' },
+  { title: 'about.values.sync.title', body: 'about.values.sync.body' },
+];
+---
+
+<PageHero
+  lang={lang}
+  badge="about.badge"
+  title="about.title"
+  description="about.description"
+/>
+
+<section class="about-section" aria-labelledby="about-why">
+  <div class="container-feed why-grid">
+    <h2 id="about-why" class="type-h2" data-i18n="about.why.title">{t('about.why.title')}</h2>
+    <div class="why-body type-body-longform">
+      <p data-i18n="about.why.p1">{t('about.why.p1')}</p>
+      <p data-i18n="about.why.p2">{t('about.why.p2')}</p>
+    </div>
+  </div>
+</section>
+
+<section class="about-section about-section-tinted" aria-labelledby="about-how">
+  <div class="container-feed how-grid">
+    <div>
+      <h2 id="about-how" class="type-h2" data-i18n="about.how.title">{t('about.how.title')}</h2>
+      <ol class="steps" role="list">
+        {steps.map((step, index) => (
+          <li class="step">
+            <span class="step-number" aria-hidden="true">{index + 1}</span>
+            <div>
+              <h3 class="type-h3" data-i18n={step.title}>{t(step.title)}</h3>
+              <p class="type-body-medium muted" data-i18n={step.body}>{t(step.body)}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="screens">
+      <img
+        class="screen screen-camera"
+        src={cameraImg.src}
+        alt=""
+        width={cameraImg.width}
+        height={cameraImg.height}
+        loading="lazy"
+      />
+      <img
+        class="screen screen-reader"
+        src={readerImg.src}
+        alt=""
+        width={readerImg.width}
+        height={readerImg.height}
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="about-section" aria-labelledby="about-values">
+  <div class="container-feed">
+    <h2 id="about-values" class="type-h2" data-i18n="about.values.title">{t('about.values.title')}</h2>
+    <ul class="values" role="list">
+      {values.map((value) => (
+        <li class="value-card">
+          <h3 class="type-h3" data-i18n={value.title}>{t(value.title)}</h3>
+          <p class="type-body-medium muted" data-i18n={value.body}>{t(value.body)}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="about-section about-section-tinted" aria-labelledby="about-cta">
+  <div class="container-feed cta">
+    <h2 id="about-cta" class="type-h2" data-i18n="about.cta.title">{t('about.cta.title')}</h2>
+    <a
+      href="https://app.songkhem.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn-primary"
+      data-i18n="hero.cta"
+    >
+      {t('hero.cta')}
+    </a>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    padding: var(--space-8) 0;
+  }
+
+  .about-section-tinted {
+    background-color: var(--md-sys-color-surface-container);
+  }
+
+  .muted {
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: var(--space-1);
+  }
+
+  .why-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .why-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .how-grid {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+
+  .step {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .step-number {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font-weight: 600;
+  }
+
+  .screens {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .screen {
+    width: 50%;
+    max-width: 240px;
+    height: auto;
+    filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.16));
+  }
+
+  .screen-camera {
+    transform: translateY(16px);
+  }
+
+  .screen-reader {
+    transform: translateY(-16px);
+    margin-left: -8px;
+  }
+
+  .values {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+  }
+
+  .value-card {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--md-sys-color-surface-container);
+  }
+
+  .cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 36px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-primary);
+    color: var(--md-sys-color-on-primary);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.92;
+    transform: translateY(-2px);
+  }
+
+  @media (min-width: 768px) {
+    .why-grid {
+      grid-template-columns: 1fr 2fr;
+      gap: var(--space-6);
+    }
+
+    .how-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .values {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  [data-theme="dark"] .screen {
+    filter: drop-shadow(0 24px 44px rgba(0, 0, 0, 0.65));
+  }
+
+  [data-theme="contrast"] .btn-primary {
+    background-color: #000000;
+    border: 2px solid #FFFF00;
+    color: #FFFF00;
+  }
+
+  [data-theme="contrast"] .screen {
+    filter: none;
+  }
+</style>
