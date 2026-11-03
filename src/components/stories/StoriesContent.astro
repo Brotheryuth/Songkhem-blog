@@ -1,6 +1,12 @@
 ---
-import PageHero from '../layout/PageHero.astro';
-import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
+import { useTranslations, type Language } from '../../i18n/translations';
+
+import interviewee1 from '../../assets/UserInterview/interviewee1.png';
+import interviewee2 from '../../assets/UserInterview/interviewee2.png';
+import keSprint from '../../assets/KE/sprint.png';
+import keUni from '../../assets/KE/Uni.png';
+import visit1 from '../../assets/SchoolVisit/visit1.png';
+import visit2 from '../../assets/SchoolVisit/visit2.png';
 
 interface Props {
   lang?: Language;
@@ -8,87 +14,337 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
-
-const stories: { id: string; tag: TranslationKey; title: TranslationKey; body: TranslationKey[] }[] = [
-  {
-    id: 'mission',
-    tag: 'stories.mission.tag',
-    title: 'stories.mission.title',
-    body: ['stories.mission.p1', 'stories.mission.p2'],
-  },
-  {
-    id: 'reading',
-    tag: 'stories.reading.tag',
-    title: 'stories.reading.title',
-    body: ['stories.reading.p1', 'stories.reading.p2'],
-  },
-  {
-    id: 'script',
-    tag: 'stories.script.tag',
-    title: 'stories.script.title',
-    body: ['stories.script.p1', 'stories.script.p2'],
-  },
-];
 ---
 
-<PageHero
-  lang={lang}
-  badge="stories.badge"
-  title="stories.title"
-  description="stories.description"
-/>
+<section id="stories" class="stories-section" aria-labelledby="stories-title">
+  <div class="container-max stories-container">
+    <!-- Stories Section Header -->
+    <header class="stories-header">
+      <span class="stories-badge" data-i18n="stories.badge">{t('stories.badge')}</span>
+      <h2 id="stories-title" class="stories-heading" data-i18n="stories.title">{t('stories.title')}</h2>
+      <p class="stories-subhead" data-i18n="stories.description">{t('stories.description')}</p>
+    </header>
 
-<div class="container-feed stories">
-  {stories.map((story) => (
-    <article class="story" aria-labelledby={`story-${story.id}`}>
-      <p class="story-tag type-caption" data-i18n={story.tag}>{t(story.tag)}</p>
-      <div>
-        <h2 id={`story-${story.id}`} class="type-h2" data-i18n={story.title}>{t(story.title)}</h2>
-        <div class="story-body type-body-longform">
-          {story.body.map((paragraph) => (
-            <p data-i18n={paragraph}>{t(paragraph)}</p>
-          ))}
+    <!-- Journey Stage 1: User Interview (Z-Shape: Content Left | Visual Right) -->
+    <article class="journey-row row-normal">
+      <div class="journey-content">
+        <span class="journey-tag" data-i18n="stories.stage1.tag">{t('stories.stage1.tag')}</span>
+        <h3 class="journey-title" data-i18n="stories.stage1.title">{t('stories.stage1.title')}</h3>
+      </div>
+
+      <div class="journey-visual">
+        <div class="gallery-grid dual-photos">
+          <figure class="photo-card">
+            <img
+              src={interviewee1.src}
+              alt="SongKhem user interview session with vision impaired community member"
+              loading="lazy"
+              width={interviewee1.width}
+              height={interviewee1.height}
+            />
+          </figure>
+          <figure class="photo-card">
+            <img
+              src={interviewee2.src}
+              alt="Community document reading workflow interview"
+              loading="lazy"
+              width={interviewee2.width}
+              height={interviewee2.height}
+            />
+          </figure>
         </div>
       </div>
     </article>
-  ))}
 
-  <p class="stories-more type-body-medium" data-i18n="stories.more">{t('stories.more')}</p>
-</div>
+    <!-- Journey Stage 2: Khmer Enterprise (Z-Shape: Visual Left | Content Right) -->
+    <article class="journey-row row-reverse">
+      <div class="journey-content">
+        <span class="journey-tag" data-i18n="stories.stage2.tag">{t('stories.stage2.tag')}</span>
+        <h3 class="journey-title" data-i18n="stories.stage2.title">{t('stories.stage2.title')}</h3>
+      </div>
+
+      <div class="journey-visual">
+        <div class="gallery-grid dual-photos ke-photos">
+          <figure class="photo-card">
+            <img
+              src={keUni.src}
+              alt="Khmer Enterprise university sprint presentations"
+              loading="lazy"
+              width={keUni.width}
+              height={keUni.height}
+            />
+          </figure>
+          <figure class="photo-card">
+            <img
+              src={keSprint.src}
+              alt="Sprint product roadmap and technical architecture board"
+              loading="lazy"
+              width={keSprint.width}
+              height={keSprint.height}
+            />
+          </figure>
+        </div>
+      </div>
+    </article>
+
+    <!-- Journey Stage 3: School Visit (Z-Shape: Content Left | Visual Right) -->
+    <article class="journey-row row-normal">
+      <div class="journey-content">
+        <span class="journey-tag" data-i18n="stories.stage3.tag">{t('stories.stage3.tag')}</span>
+        <h3 class="journey-title" data-i18n="stories.stage3.title">{t('stories.stage3.title')}</h3>
+      </div>
+
+      <div class="journey-visual">
+        <div class="gallery-grid dual-photos">
+          <figure class="photo-card">
+            <img
+              src={visit1.src}
+              alt="School classroom demonstration of SongKhem assistive reading"
+              loading="lazy"
+              width={visit1.width}
+              height={visit1.height}
+            />
+          </figure>
+          <figure class="photo-card">
+            <img
+              src={visit2.src}
+              alt="Students testing real-time Khmer audio playback in classroom"
+              loading="lazy"
+              width={visit2.width}
+              height={visit2.height}
+            />
+          </figure>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
 
 <style>
-  .stories {
-    padding-bottom: var(--space-8);
-  }
-
-  .story {
-    display: grid;
-    gap: var(--space-2);
-    padding: var(--space-7) 0;
+  .stories-section {
+    position: relative;
+    padding: calc(var(--space-8) + var(--space-4)) 0 calc(var(--space-8) + var(--space-6));
+    background-color: var(--color-surface);
+    overflow: hidden;
+    scroll-margin-top: 84px;
     border-top: 1px solid var(--color-border);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
   }
 
-  .story-tag {
-    color: var(--md-sys-color-on-surface-variant);
-  }
-
-  .story-body {
+  .stories-container {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    margin-top: var(--space-4);
+    gap: var(--space-8);
   }
 
-  .stories-more {
-    padding-top: var(--space-6);
-    border-top: 1px solid var(--color-border);
+  /* Header */
+  .stories-header {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto var(--space-4);
+  }
+
+  .stories-badge {
+    display: inline-block;
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+  }
+
+  .stories-heading {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: var(--space-2);
+  }
+
+  .stories-subhead {
     color: var(--md-sys-color-on-surface-variant);
+    font-size: 1.125rem;
+    line-height: 1.6;
   }
 
-  @media (min-width: 768px) {
-    .story {
-      grid-template-columns: 180px 1fr;
-      gap: var(--space-6);
+  /* Z-Shape Grid Row */
+  .journey-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: center;
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .journey-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* Content Column */
+  .journey-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .journey-tag {
+    display: inline-block;
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-primary-container);
+    color: var(--color-primary-text);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  .journey-title {
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+    letter-spacing: -0.5px;
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  /* Visual Column */
+  .journey-visual {
+    width: 100%;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  /* Sharp Border Photo Card (Zero Radius) */
+  .photo-card {
+    position: relative;
+    border-radius: 0 !important;
+    overflow: hidden;
+    margin: 0;
+    background-color: var(--md-sys-color-surface-container);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .photo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
+  }
+
+  .photo-card img {
+    border-radius: 0 !important;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    aspect-ratio: 16 / 10;
+  }
+
+  /* Desktop Z-Shape Layout */
+  @media (min-width: 900px) {
+    .journey-row {
+      grid-template-columns: 1fr 1.5fr;
+      gap: var(--space-8);
+      padding-bottom: var(--space-8);
     }
+
+    .row-reverse {
+      grid-template-columns: 1.5fr 1fr;
+    }
+
+    .row-reverse .journey-content {
+      order: 2;
+    }
+
+    .row-reverse .journey-visual {
+      order: 1;
+    }
+
+    .dual-photos {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .photo-card img {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* Dark Theme */
+  :global([data-theme="dark"]) .stories-section {
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="dark"]) .journey-row {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="dark"]) .stories-badge,
+  :global([data-theme="dark"]) .journey-tag {
+    background-color: #004A77;
+    color: #C2E7FF;
+  }
+
+  :global([data-theme="dark"]) .stories-heading,
+  :global([data-theme="dark"]) .journey-title {
+    color: #FFFFFF;
+  }
+
+  :global([data-theme="dark"]) .photo-card {
+    background-color: #1A1C1E;
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+  }
+
+  :global([data-theme="dark"]) .photo-card:hover {
+    box-shadow: 0 22px 44px rgba(0, 0, 0, 0.75);
+    border-color: rgba(168, 199, 250, 0.4);
+  }
+
+  /* High Contrast WCAG AAA */
+  :global([data-theme="contrast"]) .stories-section {
+    background-color: #000000;
+    border-top: 2px solid #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .journey-row {
+    border-bottom: 2px solid #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .stories-badge,
+  :global([data-theme="contrast"]) .journey-tag {
+    background-color: #FFFF00;
+    color: #000000;
+  }
+
+  :global([data-theme="contrast"]) .stories-heading,
+  :global([data-theme="contrast"]) .journey-title {
+    color: #FFFF00;
+  }
+
+  :global([data-theme="contrast"]) .photo-card {
+    border: 2px solid #FFFF00;
+    box-shadow: none;
+    background-color: #000000;
+  }
+
+  :global([data-theme="contrast"]) .photo-card:hover {
+    transform: none;
+    box-shadow: none;
   }
 </style>

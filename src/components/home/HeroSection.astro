@@ -1,8 +1,6 @@
 ---
 import backgroundSvg from '../../assets/background.svg';
-import cameraImg from '../../assets/camera-screen.png';
-import readerImg from '../../assets/reader-screen.png';
-import { useTranslations, type Language } from '../../i18n/translations';
+import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
 
 interface Props {
   lang?: Language;
@@ -10,34 +8,50 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
+
+const titleWords = ['រឿង', 'ព្រេង', '៖', 'ធនញ្ជ័យ'];
+const bodyWords = [
+  'កាលពី', 'ព្រេង', 'នាយ', 'មាន', 'កុមារ', 'ម្នាក់', 'ឈ្មោះធនញ្ជ័យ', 'ជា', 'ក្មេង', 'ឆ្លាតវៃ', 'និង', 'មាន',
+  'ប្រាជ្ញាលើស', 'ក្មេង', 'ដទៃ', '។', 'ធនញ្ជ័យ', 'តែងតែយក', 'ចំណេះ', 'ដឹង', 'និង', 'ប្រាជ្ញា', 'ស្មារតី', 'របស់',
+  'ខ្លួនមកដោះ', 'ស្រាយ', 'បញ្ហា', 'លំបាកៗ', 'ក្នុង', 'ភូមិ', 'និងជួយ', 'ដល់', 'ប្រជាជន', 'ស្លូត', 'ត្រង់', '។',
+];
+const pageTitle = 'រឿងព្រេង៖ ធនញ្ជ័យ';
+const pageText =
+  'កាលពីព្រេងនាយ មានកុមារម្នាក់ឈ្មោះធនញ្ជ័យ ជាក្មេងឆ្លាតវៃនិងមានប្រាជ្ញាលើសក្មេងដទៃ។ ធនញ្ជ័យតែងតែយកចំណេះដឹងនិងប្រាជ្ញាស្មារតីរបស់ខ្លួនមកដោះស្រាយបញ្ហាលំបាកៗក្នុងភូមិ និងជួយដល់ប្រជាជនស្លូតត្រង់។';
+
+const steps: { title: TranslationKey; body: TranslationKey }[] = [
+  { title: 'about.how.step1.title', body: 'about.how.step1.body' },
+  { title: 'about.how.step2.title', body: 'about.how.step2.body' },
+  { title: 'about.how.step3.title', body: 'about.how.step3.body' },
+];
+
+// Labels drawn on the 3D phone screen; kept in the page so the language button can swap them.
+const screenText: Record<string, TranslationKey> = {
+  search: 'scene.search',
+  further: 'scene.tooClose',
+  found: 'scene.ready',
+  camera: 'scene.camera',
+  upload: 'scene.upload',
+  history: 'scene.history',
+  scanningTitle: 'scene.scanningTitle',
+  scanningDesc: 'scene.scanningDesc',
+  progress: 'scene.progress',
+  readerTitle: 'scene.readerTitle',
+  voice: 'scene.voice',
+};
 ---
 
-<section id="hero" class="hero-section" aria-label="Introduction">
-  <!-- Prominently Visible Khmer Pattern Backdrop (Adapts to Light, Dark, & Contrast) -->
-  <div
-    class="hero-bg-layer"
-    style={`background-image: url(${backgroundSvg.src})`}
-    aria-hidden="true"
-  ></div>
+<section id="hero" class="story" aria-label="Introduction" data-story>
+  <div class="story-stage" data-stage>
+    <div class="story-bg" style={`background-image: url(${backgroundSvg.src})`} aria-hidden="true"></div>
+    <canvas class="story-canvas" data-canvas aria-hidden="true"></canvas>
 
-  <div class="hero-container container-max">
-    <!-- Left Column: Copy -->
-    <div class="hero-content">
-      <div class="hero-badge font-khmer" data-i18n="hero.badge">
-        {t('hero.badge')}
-      </div>
-
-      <h1 class="hero-title" data-i18n="hero.title" class:list={[{ 'font-khmer': lang === 'km' }]}>
-        {t('hero.title')}
-      </h1>
-
-      <p class="hero-description" data-i18n="hero.description" class:list={[{ 'font-khmer': lang === 'km' }]}>
-        {t('hero.description')}
-      </p>
-
-      <div class="hero-actions">
+    <div class="story-inner container-max">
+      <div class="story-copy" data-copy>
+        <h1 class="story-title" data-i18n="hero.title">{t('hero.title')}</h1>
+        <p class="story-description" data-i18n="hero.description">{t('hero.description')}</p>
         <a
-          href="https://app.songkhem.com"
+          href="https://ocr-for-impaired-user.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           class="btn-primary"
@@ -46,42 +60,90 @@ const t = useTranslations(lang);
           {t('hero.cta')}
         </a>
       </div>
+
+      <!-- Flat picture of the app, shown when the 3D scene is off (less motion, no WebGL, no JavaScript). -->
+      <div class="story-scene" aria-hidden="true" data-scene>
+        <div class="phone phone-camera">
+          <div class="phone-screen">
+            <div class="app-bar">
+              <span class="app-logo"></span>
+              <span class="app-brand">
+                <span class="app-name">SongKhem</span>
+                <span class="app-sub" data-i18n="scene.brandSub">{t('scene.brandSub')}</span>
+              </span>
+              <span class="app-icons"><i></i><i></i><i></i></span>
+            </div>
+            <div class="viewfinder">
+              <div class="vf-page">
+                <p class="vf-page-title">{pageTitle}</p>
+                <p class="vf-page-text">{pageText}</p>
+              </div>
+              <div class="vf-pill"><span class="vf-pill-icon"></span><span data-i18n="scene.ready">{t('scene.ready')}</span></div>
+              <span class="shutter"></span>
+            </div>
+            <div class="app-tabs">
+              <span class="app-tab is-on"><i class="tab-icon"></i><span data-i18n="scene.camera">{t('scene.camera')}</span></span>
+              <span class="app-tab"><i class="tab-icon"></i><span data-i18n="scene.upload">{t('scene.upload')}</span></span>
+              <span class="app-tab"><i class="tab-icon"></i><span data-i18n="scene.history">{t('scene.history')}</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="phone phone-reader">
+          <div class="phone-screen">
+            <div class="reader-bar"><span class="reader-back"></span><span data-i18n="scene.readerTitle">{t('scene.readerTitle')}</span><span class="reader-gear"></span></div>
+            <div class="reader-text">
+              <p>{titleWords.map((word) => <><span class="word">{word}</span>{' '}</>)}</p>
+              <p>{bodyWords.map((word, index) => <><span class:list={['word', { 'is-on': index === 0 }]}>{word}</span>{' '}</>)}</p>
+            </div>
+            <div class="player">
+              <div class="player-row"><span>សុខា</span><span>•••</span></div>
+              <span class="player-track"><span class="player-fill"></span></span>
+              <div class="player-row"><span>0:00</span><span>-0:20</span></div>
+              <div class="player-controls"><i class="ctl-prev"></i><i class="ctl-play"></i><i class="ctl-next"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Right Column: Dual Screens (Moved Further to Right, Zero Borders) -->
-    <div class="hero-visual" aria-hidden="true">
-      <div class="device-frame device-camera">
-        <img
-          src={cameraImg.src}
-          alt="SongKhem Camera Scanner"
-          width={cameraImg.width}
-          height={cameraImg.height}
-          loading="eager"
-        />
+    <div class="story-captions" data-captions>
+      <div class="captions-progress" aria-hidden="true">
+        {steps.map(() => <span class="captions-segment"><span class="captions-fill" data-caption-fill></span></span>)}
       </div>
-      <div class="device-frame device-reader">
-        <img
-          src={readerImg.src}
-          alt="SongKhem Karaoke Document Reader"
-          width={readerImg.width}
-          height={readerImg.height}
-          loading="eager"
-        />
-      </div>
+      <ol class="captions-steps" role="list">
+        {steps.map((step, index) => (
+          <li class="caption" data-caption>
+            <span class="caption-number" aria-hidden="true">{index + 1}</span>
+            <div>
+              <h2 class="caption-title" data-i18n={step.title}>{t(step.title)}</h2>
+              <p class="caption-body" data-i18n={step.body}>{t(step.body)}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <div hidden data-screen-text>
+      {Object.entries(screenText).map(([name, key]) => <span data-name={name} data-i18n={key}>{t(key)}</span>)}
     </div>
   </div>
 </section>
 
 <style>
-  .hero-section {
+  .story {
+    --story-top: 68px;
+    --ps: 0.82;
     position: relative;
-    padding: var(--space-8) 0 calc(var(--space-8) + var(--space-5));
     background-color: var(--color-surface);
+  }
+
+  .story-stage {
+    position: relative;
     overflow: hidden;
   }
 
-  /* 1. Default Light Mode: Crisp Brand Blue Pattern */
-  .hero-bg-layer {
+  .story-bg {
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -89,56 +151,44 @@ const t = useTranslations(lang);
     background-size: 560px auto;
     background-position: center;
     opacity: 0.18;
-    z-index: 0;
     mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, #000 65%, transparent 100%);
     -webkit-mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, #000 65%, transparent 100%);
-    transition: opacity 0.25s ease, filter 0.25s ease;
   }
 
-  /* 2. Dark Mode: Subtle White/Silver Pattern */
-  :global([data-theme="dark"]) .hero-bg-layer {
-    opacity: 0.18;
+  :global([data-theme="dark"]) .story-bg {
     filter: invert(1) brightness(0.75);
   }
 
-  /* 3. Contrast Mode: Bright High-Contrast Yellow Pattern */
-  :global([data-theme="contrast"]) .hero-bg-layer {
-    display: block;
+  :global([data-theme="contrast"]) .story-bg {
     opacity: 0.28;
     filter: invert(94%) sepia(93%) saturate(1352%) hue-rotate(359deg) brightness(106%) contrast(107%);
   }
 
-  .hero-container {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
-    align-items: center;
+  .story-canvas,
+  .story-captions {
+    display: none;
   }
 
-  /* Left Column */
-  .hero-content {
+  .story-inner {
+    position: relative;
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+    padding-top: var(--space-8);
+    padding-bottom: calc(var(--space-8) + var(--space-5));
+  }
+
+  .story-copy {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-4);
-    max-width: 500px;
+    max-width: 520px;
   }
 
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    background-color: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-pill);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-  }
-
-  .hero-title {
+  .story-title {
     font-size: clamp(2.35rem, 5vw, 3.6rem);
     line-height: 1.15;
     letter-spacing: -0.5px;
@@ -146,22 +196,17 @@ const t = useTranslations(lang);
     color: var(--md-sys-color-on-surface);
   }
 
-  .hero-description {
+  .story-description {
     font-size: 1.125rem;
     line-height: 1.7;
     color: var(--md-sys-color-on-surface-variant);
-  }
-
-  .hero-actions {
-    display: flex;
-    align-items: center;
-    padding-top: var(--space-2);
   }
 
   .btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin-top: var(--space-2);
     padding: 16px 36px;
     border-radius: var(--radius-pill);
     background-color: var(--color-primary);
@@ -176,134 +221,660 @@ const t = useTranslations(lang);
     transform: translateY(-2px);
   }
 
-  /* Right Column: Dual Screens (Zero Borders, Soft Natural Shadows) */
-  .hero-visual {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    position: relative;
-    padding: var(--space-5) 0;
-    width: 100%;
-    margin-left: auto;
-  }
-
-  .device-frame {
-    position: relative;
-    width: 50%;
-    max-width: 330px;
-    border: none !important;
-    outline: none !important;
-    filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.16));
-    transition: transform 0.3s ease;
-  }
-
-  .device-frame img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border: none;
-    border-radius: 0;
-  }
-
-  /* Staggered & angled cascade */
-  .device-camera {
-    transform: translateY(32px) rotate(-3deg);
-    z-index: 1;
-  }
-
-  .device-reader {
-    transform: translateY(-32px) rotate(2deg);
-    z-index: 2;
-    margin-left: -18px;
-  }
-
-  /* Desktop */
-  @media (min-width: 1024px) {
-    .hero-container {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-7);
-    }
-
-    .hero-visual {
-      transform: translateX(50px);
-    }
-
-    .device-frame {
-      max-width: 340px;
-    }
-
-    .device-reader {
-      margin-left: -20px;
-    }
-  }
-
-  /* Large Desktop */
-  @media (min-width: 1280px) {
-    .hero-visual {
-      transform: translateX(80px);
-    }
-  }
-
-  /* Tablet */
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .hero-content {
-      max-width: 680px;
-    }
-
-    .hero-visual {
-      justify-content: center;
-      margin-top: var(--space-4);
-      transform: none;
-    }
-
-    .device-frame {
-      max-width: 290px;
-    }
-  }
-
-  /* Mobile */
-  @media (max-width: 767px) {
-    .hero-visual {
-      justify-content: center;
-      gap: 4px;
-      transform: none;
-    }
-
-    .device-frame {
-      max-width: 180px;
-    }
-
-    .device-camera {
-      transform: translateY(12px) rotate(-2deg);
-    }
-
-    .device-reader {
-      transform: translateY(-12px) rotate(1deg);
-      margin-left: -8px;
-    }
-  }
-
-  /* Dark Theme */
-  :global([data-theme="dark"]) .device-frame {
-    filter: drop-shadow(0 24px 44px rgba(0, 0, 0, 0.65));
-  }
-
-  /* High Contrast WCAG AAA - No Outlines or Borders on Images */
-  :global([data-theme="contrast"]) .hero-badge {
-    background-color: #FFFF00;
-    color: #000000;
-  }
-
   :global([data-theme="contrast"]) .btn-primary {
     background-color: #000000;
     border: 2px solid #FFFF00;
     color: #FFFF00;
   }
 
-  :global([data-theme="contrast"]) .device-frame {
-    filter: none;
-    outline: none !important;
-    border: none !important;
-    box-shadow: none !important;
+  @media (min-width: 1024px) {
+    .story-inner {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-7);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .story {
+      --ps: 0.66;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .story {
+      --ps: 0.5;
+    }
+  }
+
+  /* ---------- Flat phones (fallback) ---------- */
+  .story-scene {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-5) 0;
+  }
+
+  .phone {
+    position: relative;
+    flex: none;
+    width: 300px;
+    height: 620px;
+    margin: calc(-310px * (1 - var(--ps))) calc(-150px * (1 - var(--ps)));
+    padding: 10px;
+    border-radius: 46px;
+    background: #18264F;
+    box-shadow: inset 0 0 0 2px #2A3A63, 0 24px 36px rgba(0, 0, 0, 0.16);
+  }
+
+  .phone-camera {
+    z-index: 1;
+    transform: translateY(32px) scale(var(--ps)) rotate(-3deg);
+  }
+
+  .phone-reader {
+    z-index: 2;
+    margin-left: calc(-150px * (1 - var(--ps)) - 20px);
+    transform: translateY(-32px) scale(var(--ps)) rotate(2deg);
+  }
+
+  .phone-screen {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 36px;
+    background: #F8FAFC;
+    color: #1F2937;
+    font-family: 'Kantumruy Pro', var(--font-sans);
+    letter-spacing: 0;
+  }
+
+  .app-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 58px;
+    padding: 14px 16px 0;
+    flex: none;
+  }
+
+  .app-logo {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #2F4FC8;
+  }
+
+  .app-brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15 !important;
+  }
+
+  .app-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .app-sub {
+    font-size: 8px;
+    color: #4B5563;
+  }
+
+  .app-icons {
+    display: flex;
+    gap: 9px;
+    margin-left: auto;
+  }
+
+  .app-icons i {
+    width: 13px;
+    height: 13px;
+    border: 2px solid #374151;
+    border-radius: 50%;
+  }
+
+  .viewfinder {
+    position: relative;
+    flex: 1;
+    margin: 4px 8px 8px;
+    overflow: hidden;
+    border-radius: 16px;
+    background:
+      repeating-linear-gradient(92deg, rgba(43, 26, 15, 0.22) 0 2px, transparent 2px 13px),
+      radial-gradient(ellipse at 40% 30%, #8F6A4A 0%, #6A4A30 55%, #452F1E 100%);
+  }
+
+  .vf-page {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 200px;
+    height: 264px;
+    margin: -132px 0 0 -100px;
+    padding: 18px 16px;
+    background: #FBF8EF;
+    color: #1B1B1B;
+    outline: 3px solid #22C55E;
+    transform: rotate(-2deg);
+  }
+
+  .vf-page-title {
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.8 !important;
+  }
+
+  .vf-page-text {
+    font-size: 9px;
+    line-height: 2 !important;
+  }
+
+  .vf-pill {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px 7px 8px;
+    border-radius: 18px;
+    background: rgba(17, 24, 39, 0.88);
+    color: #FFFFFF;
+    font-size: 9.5px;
+    line-height: 1.5 !important;
+  }
+
+  .vf-pill-icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px dashed #93C5FD;
+  }
+
+  .shutter {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    width: 56px;
+    height: 56px;
+    margin-left: -28px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.45);
+  }
+
+  .app-tabs {
+    display: flex;
+    justify-content: space-around;
+    height: 64px;
+    padding-top: 8px;
+    flex: none;
+    background: #EEF2F7;
+    font-size: 9px;
+    color: #4B5563;
+  }
+
+  .app-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .app-tab.is-on {
+    color: #111827;
+    font-weight: 700;
+  }
+
+  .tab-icon {
+    width: 40px;
+    height: 22px;
+    border-radius: 999px;
+  }
+
+  .app-tab.is-on .tab-icon {
+    background: #C7E0FF;
+  }
+
+  .reader-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 14px 18px 0;
+    flex: none;
+    border-bottom: 1px solid #DCE3EE;
+    font-size: 13px;
+    color: #111827;
+  }
+
+  .reader-back {
+    width: 12px;
+    height: 12px;
+    border-left: 2px solid #111827;
+    border-bottom: 2px solid #111827;
+    transform: rotate(45deg);
+  }
+
+  .reader-gear {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #111827;
+    border-radius: 50%;
+  }
+
+  .reader-text {
+    flex: 1;
+    padding: 18px 16px 0;
+    font-size: 14.5px;
+    color: #111827;
+  }
+
+  .reader-text p {
+    margin-bottom: 6px;
+    line-height: 2.15 !important;
+  }
+
+  .word {
+    padding: 2px 3px;
+    border-radius: 4px;
+  }
+
+  .word.is-on {
+    background: #FEF08A;
+  }
+
+  .player {
+    flex: none;
+    padding: 10px 20px 18px;
+    border-top: 1px solid #DCE3EE;
+    font-size: 9px;
+    color: #374151;
+  }
+
+  .player-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .player-track {
+    display: block;
+    height: 4px;
+    margin-top: 10px;
+    border-radius: 999px;
+    background: #DCE3EE;
+  }
+
+  .player-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 34px;
+    margin-top: 8px;
+  }
+
+  .ctl-prev,
+  .ctl-next {
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+  }
+
+  .ctl-prev {
+    border-right: 10px solid #111827;
+  }
+
+  .ctl-next {
+    border-left: 10px solid #111827;
+  }
+
+  .ctl-play {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #3B5BDB;
+  }
+
+  .ctl-play::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 14px;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 13px solid #FFFFFF;
+  }
+
+  /* ---------- 3D scene: pinned, and every part moves with the scroll ---------- */
+  .story.is-live {
+    height: 560svh;
+  }
+
+  .is-live .story-stage {
+    position: sticky;
+    top: var(--story-top);
+    height: calc(100svh - var(--story-top));
+  }
+
+  .is-live .story-inner {
+    position: static;
+    height: 100%;
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+
+  .is-live .story-scene {
+    display: none;
+  }
+
+  .is-live .story-canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 1023px), (orientation: portrait) {
+    .is-live .story-inner {
+      align-items: start;
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* Captions */
+  .is-live .story-captions {
+    display: block;
+    position: absolute;
+    z-index: 3;
+    opacity: 0;
+    visibility: hidden;
+    left: max(var(--space-5), calc((100% - var(--container-max)) / 2 + var(--space-5)));
+    top: 50%;
+    width: min(400px, 32%);
+    transform: translateY(-50%);
+  }
+
+  .captions-progress {
+    display: flex;
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+  }
+
+  .captions-segment {
+    flex: 1;
+    height: 4px;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background-color: var(--md-sys-color-outline-variant);
+  }
+
+  .captions-fill {
+    display: block;
+    height: 100%;
+    background-color: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+
+  .captions-steps {
+    display: grid;
+  }
+
+  .caption {
+    grid-area: 1 / 1;
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .caption.is-current {
+    opacity: 1;
+  }
+
+  .caption-number {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-sm);
+    background-color: #FEF08A;
+    color: #1F1F1F;
+    font-weight: 700;
+  }
+
+  .caption-title {
+    font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .caption-body {
+    margin-top: var(--space-2);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  :global([data-theme="contrast"]) .caption-number {
+    background-color: #FFFF00;
+    color: #000000;
+  }
+
+  /* Narrow screens: captions sit in a compact band along the bottom. */
+  @media (max-width: 1023px), (orientation: portrait) {
+    .is-live .story-captions {
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: 0;
+      width: auto;
+      transform: none;
+      padding: var(--space-3) var(--space-4) var(--space-4);
+      background-color: #041E49;
+      --md-sys-color-on-surface: #FFFFFF;
+      --md-sys-color-on-surface-variant: #C2E7FF;
+      --md-sys-color-outline-variant: rgba(255, 255, 255, 0.28);
+      --color-primary: #FEF08A;
+    }
+
+    .captions-progress {
+      margin-bottom: var(--space-3);
+    }
+
+    .caption-title {
+      font-size: 1.25rem;
+    }
+
+    .caption-body {
+      margin-top: var(--space-1);
+      font-size: 0.9375rem;
+      line-height: 1.5;
+    }
+
+    :global([data-theme="dark"]) .is-live .story-captions {
+      background-color: #0B2A5B;
+    }
+
+    :global([data-theme="contrast"]) .is-live .story-captions {
+      background-color: #000000;
+      border-top: 2px solid #FFFF00;
+      --md-sys-color-on-surface-variant: #FFFF00;
+      --color-primary: #FFFF00;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .caption,
+    .btn-primary {
+      transition: none;
+    }
   }
 </style>
+
+<script>
+  import type { Frame, SceneText } from '../../scripts/phone-scene';
+
+  const root = document.querySelector<HTMLElement>('[data-story]');
+
+  const supportsWebGL = () => {
+    try {
+      const probe = document.createElement('canvas');
+      return !!probe.getContext('webgl2');
+    } catch {
+      return false;
+    }
+  };
+
+  // The 3D scene is extra: it only starts when motion is welcome, the screen is tall enough and WebGL works.
+  const wanted =
+    root &&
+    window.matchMedia('(prefers-reduced-motion: no-preference)').matches &&
+    window.innerHeight >= 500 &&
+    supportsWebGL();
+
+  if (root && wanted) {
+    const stage = root.querySelector<HTMLElement>('[data-stage]')!;
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-canvas]')!;
+    const copy = root.querySelector<HTMLElement>('[data-copy]')!;
+    const cta = copy.querySelector<HTMLAnchorElement>('.btn-primary')!;
+    const captionBox = root.querySelector<HTMLElement>('[data-captions]')!;
+    const captions = [...root.querySelectorAll<HTMLElement>('[data-caption]')];
+    const fills = [...root.querySelectorAll<HTMLElement>('[data-caption-fill]')];
+    const textBox = root.querySelector<HTMLElement>('[data-screen-text]')!;
+    const header = document.querySelector<HTMLElement>('.site-header');
+
+    const readText = () =>
+      Object.fromEntries(
+        [...textBox.querySelectorAll<HTMLElement>('[data-name]')].map((el) => [el.dataset.name, el.textContent ?? ''])
+      ) as SceneText;
+
+    const clamp = (v: number, a = 0, b = 1) => Math.min(Math.max(v, a), b);
+    const seg = (p: number, a: number, b: number) => clamp((p - a) / (b - a));
+    const ease = (t: number) => t * t * (3 - 2 * t);
+    const show = (el: HTMLElement, opacity: number) => {
+      el.style.opacity = String(opacity);
+      el.style.visibility = opacity <= 0.01 ? 'hidden' : 'visible';
+    };
+
+    const start = async () => {
+      const { createPhoneScene } = await import('../../scripts/phone-scene');
+      const scene = await createPhoneScene(canvas, readText());
+
+      // Switch on the pinned layout without moving what the visitor is looking at.
+      const before = root.offsetHeight;
+      const wasPast = window.scrollY > root.offsetTop + before;
+      root.classList.add('is-live');
+      if (wasPast) window.scrollBy(0, root.offsetHeight - before);
+
+      let wide = false;
+
+      const frame = (): Frame => {
+        root.style.setProperty('--story-top', `${header?.offsetHeight ?? 0}px`);
+        copy.style.transform = '';
+        const W = stage.clientWidth;
+        const H = stage.clientHeight;
+        wide = W >= 1024 && W > H;
+        const pad = W >= 768 ? 24 : 16;
+        const cw = Math.min(W, 1200);
+        const left = (W - cw) / 2 + pad;
+        const right = (W + cw) / 2 - pad;
+        if (wide) {
+          const half = left + (right - left) * 0.5;
+          const mainLeft = left + (right - left) * 0.36;
+          return {
+            W, H,
+            hero: { x: half, y: H * 0.08, w: right - half, h: H * 0.84 },
+            main: { x: mainLeft, y: 0, w: W - mainLeft - (W - right) * 0.5, h: H },
+          };
+        }
+        const stageTop = stage.getBoundingClientRect().top;
+        const copyBottom = copy.getBoundingClientRect().bottom - stageTop + 8;
+        const band = captionBox.offsetHeight;
+        return {
+          W, H,
+          hero: { x: 0, y: copyBottom, w: W, h: Math.max(H - copyBottom, 140) },
+          main: { x: 0, y: 0, w: W, h: H - band },
+        };
+      };
+
+      const progress = () => {
+        const distance = root.offsetHeight - stage.offsetHeight;
+        const top = header?.offsetHeight ?? 0;
+        return clamp((top - root.getBoundingClientRect().top) / distance);
+      };
+
+      const paint = (p: number) => {
+        const out = ease(seg(p, 0.03, 0.12));
+        copy.style.transform = wide ? `translateX(${-48 * out}px)` : `translateY(${-32 * out}px)`;
+        show(copy, 1 - out);
+        cta.tabIndex = out > 0.5 ? -1 : 0;
+
+        show(captionBox, ease(seg(p, 0.12, 0.2)));
+        const step = p < 0.41 ? 0 : p < 0.58 ? 1 : 2;
+        captions.forEach((caption, index) => caption.classList.toggle('is-current', index === step));
+        const ranges = [[0.18, 0.41], [0.41, 0.58], [0.62, 0.95]];
+        fills.forEach((fill, index) => {
+          fill.style.transform = `scaleX(${seg(p, ranges[index][0], ranges[index][1])})`;
+        });
+
+        const state = scene.render(p);
+        root.dataset.progress = p.toFixed(3);
+        root.dataset.pageInView = String(state?.inside ?? 0);
+      };
+
+      let target = 0;
+      let current = 0;
+      let raf = 0;
+      const tick = () => {
+        raf = 0;
+        // Light easing turns mouse wheel steps into smooth motion.
+        current += (target - current) * 0.3;
+        if (Math.abs(target - current) < 0.0005) current = target;
+        paint(current);
+        if (current !== target) raf = requestAnimationFrame(tick);
+      };
+      const onScroll = () => {
+        target = progress();
+        if (!raf) raf = requestAnimationFrame(tick);
+      };
+      const onResize = () => {
+        scene.resize(frame());
+        current = target = progress();
+        paint(current);
+      };
+
+      onResize();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize);
+      const observer = new ResizeObserver(onResize);
+      if (header) observer.observe(header);
+      observer.observe(copy);
+
+      // Redraw the phone screen when the language button swaps the labels.
+      new MutationObserver(() => {
+        scene.setText(readText());
+        paint(current);
+      }).observe(textBox, { subtree: true, childList: true, characterData: true });
+    };
+
+    start().catch(() => {
+      // If anything goes wrong, the flat version stays in place.
+      root.classList.remove('is-live');
+    });
+  }
+</script>

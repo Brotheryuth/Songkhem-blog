@@ -13,6 +13,10 @@
   },
   "dependencies": {
     "astro": "^7.4.4",
+    "three": "0.186.1",
     "upgrade": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/three": "0.186.0"
   }
 }
