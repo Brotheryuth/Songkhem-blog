@@ -1,0 +1,16 @@
+Model information:
+* What:    the right hand and lower forearm of a human made with MPFB 2 (MakeHuman Plugin For Blender)
+* Source:  https://static.makehumancommunity.org/mpfb.html
+* Assets:  MPFB 2 base mesh and "game_engine" skeleton, and the MakeHuman system assets skin
+           "young_asian_male" (makehuman_system_assets_cc0.zip)
+
+Licence:
+* CC0 1.0 (public domain dedication): https://creativecommons.org/publicdomain/zero/1.0/
+  MakeHuman's assets and everything MPFB 2 outputs are released under CC0; no credit is required.
+
+Changes made for SongKhem:
+* kept the hand and 12 cm of forearm, smoothed one level (13,744 triangles), given its own UV layout
+* new skin colour and detail maps baked in Blender (knuckle and fingertip colour, folds, veins,
+  fine hair, creases, fingerprints)
+* posed round a phone the size of the one on the site; three thumb poses (away, hover, press) are
+  stored as the animation "grip", and the node "PhoneAnchor" marks where the phone sits in the hand

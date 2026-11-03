@@ -326,9 +326,35 @@ const aboutPath = lang === 'km' ? '/km#about' : '/#about';
     border: 2px solid #FFFF00;
   }
 
+  /* Phones: the menu gets its own row, so the header never runs off the screen. */
   @media (max-width: 768px) {
+    .site-header {
+      height: auto;
+    }
+    .header-inner {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      padding-top: var(--space-2);
+      padding-bottom: var(--space-2);
+    }
+    .site-nav {
+      order: 3;
+      width: 100%;
+    }
     .nav-list {
-      gap: var(--space-3);
+      width: 100%;
+      justify-content: space-between;
+    }
+    .nav-list li {
+      flex: 1;
+    }
+    .nav-link {
+      width: 100%;
+      padding: 6px 4px;
+      white-space: nowrap;
+    }
+    .app-button {
+      margin-left: 0;
     }
     .icon-button {
       width: 36px;
@@ -337,6 +363,12 @@ const aboutPath = lang === 'km' ? '/km#about' : '/#about';
     .app-button {
       padding: 6px 14px;
       font-size: 0.8125rem;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .brand-title {
+      display: none;
     }
   }
 </style>
