@@ -2,7 +2,7 @@
 import cameraImg from '../../assets/camera-screen.png';
 import readerImg from '../../assets/reader-screen.png';
 import uploadImg from '../../assets/UploadScreen.png';
-import { useTranslations, type Language } from '../../i18n/translations';
+import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
 
 interface Props {
   lang?: Language;
@@ -10,9 +10,35 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
+
+// The app's words for the 3D phone's screen (the language button swaps them like any other text)
+const screenText: Record<string, TranslationKey> = {
+  search: 'scene.search',
+  further: 'scene.tooClose',
+  found: 'scene.ready',
+  camera: 'scene.camera',
+  upload: 'scene.upload',
+  history: 'scene.history',
+  scanningTitle: 'scene.scanningTitle',
+  scanningDesc: 'scene.scanningDesc',
+  progress: 'scene.progress',
+  readerTitle: 'scene.readerTitle',
+  voice: 'scene.voice',
+  upTitle: 'scene.upTitle',
+  upDesc: 'scene.upDesc',
+  upButton: 'scene.upButton',
+  upHelper: 'scene.upHelper',
+  upSamples: 'scene.upSamples',
+  s1c: 'scene.s1c',
+  s1t: 'scene.s1t',
+  s2c: 'scene.s2c',
+  s2t: 'scene.s2t',
+  s3c: 'scene.s3c',
+  s3t: 'scene.s3t',
+};
 ---
 
-<section id="features" class="features-section" aria-labelledby="features-title">
+<section id="features" class="features-section" aria-labelledby="features-title" data-features>
   <div class="features-container container-max">
     <div class="features-header">
       <h2 id="features-title" class="features-heading type-h1" data-i18n="features.title">
@@ -22,107 +48,129 @@ const t = useTranslations(lang);
         {t('features.subhead')}
       </p>
     </div>
+  </div>
 
-    <div class="features-list">
-      <!-- Feature 1: Live Guided Camera Scanner -->
-      <article class="feature-row row-normal">
-        <div class="feature-content">
-          <div class="feature-tag font-khmer" data-i18n="f1.tag">{t('f1.tag')}</div>
-          <h3 class="feature-title type-h2" data-i18n="f1.title">{t('f1.title')}</h3>
-          <ul class="feature-bullets">
-            <li>
-              <strong data-i18n="f1.b1.title">{t('f1.b1.title')}</strong><span data-i18n="f1.b1.desc">{t('f1.b1.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f1.b2.title">{t('f1.b2.title')}</strong><span data-i18n="f1.b2.desc">{t('f1.b2.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f1.b3.title">{t('f1.b3.title')}</strong><span data-i18n="f1.b3.desc">{t('f1.b3.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f1.b4.title">{t('f1.b4.title')}</strong><span data-i18n="f1.b4.desc">{t('f1.b4.desc')}</span>
-            </li>
-          </ul>
-        </div>
-        <div class="feature-visual" aria-hidden="true">
-          <div class="feature-device-frame">
-            <img
-              src={cameraImg.src}
-              alt="Live Guided Camera Scanner in SongKhem"
-              width={cameraImg.width}
-              height={cameraImg.height}
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </article>
+  <!-- With motion and a wide screen, this becomes a pinned 3D stage: the phone turns to each feature as you scroll -->
+  <div class="features-track" data-fs-track>
+    <div class="features-stage" data-fs-stage>
+      <canvas class="features-canvas" data-fs-canvas aria-hidden="true"></canvas>
+      <div class="stage-dots" aria-hidden="true"><span data-fs-dot></span><span data-fs-dot></span><span data-fs-dot></span></div>
+      <div class="features-container container-max features-inner">
+        <div class="features-list">
+          <!-- Feature 1: Live Guided Camera Scanner -->
+          <article class="feature-row row-normal" data-fs-row>
+            <div class="feature-content">
+              <div class="feature-tag font-khmer" data-i18n="f1.tag">{t('f1.tag')}</div>
+              <h3 class="feature-title type-h2" data-i18n="f1.title">{t('f1.title')}</h3>
+              <!-- On the 3D stage: a big short title and one line instead of the list -->
+              <p class="feature-short" aria-hidden="true" data-i18n="f1.short">{t('f1.short')}</p>
+              <p class="feature-lead" data-i18n="f1.lead">{t('f1.lead')}</p>
+              <ul class="feature-bullets">
+                <li>
+                  <strong data-i18n="f1.b1.title">{t('f1.b1.title')}</strong><span data-i18n="f1.b1.desc">{t('f1.b1.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f1.b2.title">{t('f1.b2.title')}</strong><span data-i18n="f1.b2.desc">{t('f1.b2.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f1.b3.title">{t('f1.b3.title')}</strong><span data-i18n="f1.b3.desc">{t('f1.b3.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f1.b4.title">{t('f1.b4.title')}</strong><span data-i18n="f1.b4.desc">{t('f1.b4.desc')}</span>
+                </li>
+              </ul>
+            </div>
+            <div class="feature-visual" aria-hidden="true">
+              <div class="feature-device-frame">
+                <img
+                  src={cameraImg.src}
+                  alt="Live Guided Camera Scanner in SongKhem"
+                  width={cameraImg.width}
+                  height={cameraImg.height}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </article>
 
-      <!-- Feature 2: Karaoke Document Reader -->
-      <article class="feature-row row-reverse">
-        <div class="feature-content">
-          <div class="feature-tag font-khmer" data-i18n="f2.tag">{t('f2.tag')}</div>
-          <h3 class="feature-title type-h2" data-i18n="f2.title">{t('f2.title')}</h3>
-          <ul class="feature-bullets">
-            <li>
-              <strong data-i18n="f2.b1.title">{t('f2.b1.title')}</strong><span data-i18n="f2.b1.desc">{t('f2.b1.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f2.b2.title">{t('f2.b2.title')}</strong><span data-i18n="f2.b2.desc">{t('f2.b2.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f2.b3.title">{t('f2.b3.title')}</strong><span data-i18n="f2.b3.desc">{t('f2.b3.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f2.b4.title">{t('f2.b4.title')}</strong><span data-i18n="f2.b4.desc">{t('f2.b4.desc')}</span>
-            </li>
-          </ul>
-        </div>
-        <div class="feature-visual" aria-hidden="true">
-          <div class="feature-device-frame">
-            <img
-              src={readerImg.src}
-              alt="Karaoke Document Reader in SongKhem"
-              width={readerImg.width}
-              height={readerImg.height}
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </article>
+          <!-- Feature 2: Karaoke Document Reader -->
+          <article class="feature-row row-reverse" data-fs-row>
+            <div class="feature-content">
+              <div class="feature-tag font-khmer" data-i18n="f2.tag">{t('f2.tag')}</div>
+              <h3 class="feature-title type-h2" data-i18n="f2.title">{t('f2.title')}</h3>
+              <!-- On the 3D stage: a big short title and one line instead of the list -->
+              <p class="feature-short" aria-hidden="true" data-i18n="f2.short">{t('f2.short')}</p>
+              <p class="feature-lead" data-i18n="f2.lead">{t('f2.lead')}</p>
+              <ul class="feature-bullets">
+                <li>
+                  <strong data-i18n="f2.b1.title">{t('f2.b1.title')}</strong><span data-i18n="f2.b1.desc">{t('f2.b1.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f2.b2.title">{t('f2.b2.title')}</strong><span data-i18n="f2.b2.desc">{t('f2.b2.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f2.b3.title">{t('f2.b3.title')}</strong><span data-i18n="f2.b3.desc">{t('f2.b3.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f2.b4.title">{t('f2.b4.title')}</strong><span data-i18n="f2.b4.desc">{t('f2.b4.desc')}</span>
+                </li>
+              </ul>
+            </div>
+            <div class="feature-visual" aria-hidden="true">
+              <div class="feature-device-frame">
+                <img
+                  src={readerImg.src}
+                  alt="Karaoke Document Reader in SongKhem"
+                  width={readerImg.width}
+                  height={readerImg.height}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </article>
 
-      <!-- Feature 3: Universal Document & File Uploader (With Phone Bezel) -->
-      <article class="feature-row row-normal">
-        <div class="feature-content">
-          <div class="feature-tag font-khmer" data-i18n="f3.tag">{t('f3.tag')}</div>
-          <h3 class="feature-title type-h2" data-i18n="f3.title">{t('f3.title')}</h3>
-          <ul class="feature-bullets">
-            <li>
-              <strong data-i18n="f3.b1.title">{t('f3.b1.title')}</strong><span data-i18n="f3.b1.desc">{t('f3.b1.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f3.b2.title">{t('f3.b2.title')}</strong><span data-i18n="f3.b2.desc">{t('f3.b2.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f3.b3.title">{t('f3.b3.title')}</strong><span data-i18n="f3.b3.desc">{t('f3.b3.desc')}</span>
-            </li>
-            <li>
-              <strong data-i18n="f3.b4.title">{t('f3.b4.title')}</strong><span data-i18n="f3.b4.desc">{t('f3.b4.desc')}</span>
-            </li>
-          </ul>
+          <!-- Feature 3: Universal Document & File Uploader (With Phone Bezel) -->
+          <article class="feature-row row-normal" data-fs-row>
+            <div class="feature-content">
+              <div class="feature-tag font-khmer" data-i18n="f3.tag">{t('f3.tag')}</div>
+              <h3 class="feature-title type-h2" data-i18n="f3.title">{t('f3.title')}</h3>
+              <!-- On the 3D stage: a big short title and one line instead of the list -->
+              <p class="feature-short" aria-hidden="true" data-i18n="f3.short">{t('f3.short')}</p>
+              <p class="feature-lead" data-i18n="f3.lead">{t('f3.lead')}</p>
+              <ul class="feature-bullets">
+                <li>
+                  <strong data-i18n="f3.b1.title">{t('f3.b1.title')}</strong><span data-i18n="f3.b1.desc">{t('f3.b1.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f3.b2.title">{t('f3.b2.title')}</strong><span data-i18n="f3.b2.desc">{t('f3.b2.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f3.b3.title">{t('f3.b3.title')}</strong><span data-i18n="f3.b3.desc">{t('f3.b3.desc')}</span>
+                </li>
+                <li>
+                  <strong data-i18n="f3.b4.title">{t('f3.b4.title')}</strong><span data-i18n="f3.b4.desc">{t('f3.b4.desc')}</span>
+                </li>
+              </ul>
+            </div>
+            <div class="feature-visual" aria-hidden="true">
+              <div class="feature-device-frame feature-phone-bezel">
+                <img
+                  src={uploadImg.src}
+                  alt="Universal Document and File Uploader in SongKhem"
+                  width={uploadImg.width}
+                  height={uploadImg.height}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </article>
         </div>
-        <div class="feature-visual" aria-hidden="true">
-          <div class="feature-device-frame feature-phone-bezel">
-            <img
-              src={uploadImg.src}
-              alt="Universal Document and File Uploader in SongKhem"
-              width={uploadImg.width}
-              height={uploadImg.height}
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </article>
+      </div>
     </div>
+  </div>
+
+  <div hidden data-fs-text>
+    {Object.entries(screenText).map(([name, key]) => <span data-name={name} data-i18n={key}>{t(key)}</span>)}
   </div>
 </section>
 
@@ -385,4 +433,324 @@ const t = useTranslations(lang);
     border: 3px solid #FFFF00 !important;
     filter: none !important;
   }
+  /* ---------- 3D stage (wide screens, motion welcome, not high contrast) ----------
+     The section grows a tall scroll track; the stage stays pinned and fills the screen while the phone turns
+     to each feature. Each feature shows only a big short title and one line over the 3D; its heading and
+     full list stay in the page for screen readers. The plain layout above is used everywhere else. */
+  .features-canvas,
+  .stage-dots,
+  .feature-short,
+  .feature-lead {
+    display: none;
+  }
+
+  .features-section.is-live {
+    overflow: clip;
+    padding-bottom: 0;
+  }
+
+  .features-section.is-live .features-track {
+    position: relative;
+    height: 330vh;
+  }
+
+  .features-section.is-live .features-stage {
+    position: sticky;
+    top: var(--fs-top, 68px);
+    height: calc(100vh - var(--fs-top, 68px));
+    overflow: hidden;
+  }
+
+  .features-section.is-live .features-canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .features-section.is-live .features-inner {
+    position: relative;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-top: 76px; /* below the floating logo */
+    padding-bottom: var(--space-7);
+  }
+
+  /* Where you are: a few dots on the right edge; the current one stretches into a short line */
+  .features-section.is-live .stage-dots {
+    position: absolute;
+    right: var(--space-5);
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 8px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--sec-bg) 80%, transparent);
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+    transform: translateY(-50%);
+  }
+
+  .stage-dots span {
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 3px;
+    background-color: var(--sec-subhead);
+    opacity: 0.45;
+    transition: height 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.3s ease;
+  }
+
+  .stage-dots span.is-active {
+    height: 22px;
+    opacity: 1;
+    background-color: var(--sec-heading);
+  }
+
+  .features-section.is-live .features-list {
+    display: grid;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .features-section.is-live .feature-row {
+    grid-area: 1 / 1;
+    display: block;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(28px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+      visibility 0s linear 0.4s;
+  }
+
+  .features-section.is-live .feature-row.is-current {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0.12s, 0.12s, 0s;
+  }
+
+  .features-section.is-live .feature-visual {
+    display: none;
+  }
+
+  /* Tag at the top under the counter; the big title bottom left; the one line bottom right; the middle
+     column stays clear for the phone */
+  .features-section.is-live .feature-content {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(24vw, 360px) minmax(0, 320px);
+    grid-template-rows: auto 1fr auto;
+    column-gap: var(--space-7);
+    row-gap: 0;
+    text-shadow: 0 0 22px var(--sec-bg), 0 0 8px var(--sec-bg);
+  }
+
+  .features-section.is-live .feature-tag {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin-top: var(--space-3);
+  }
+
+  .features-section.is-live .feature-short {
+    display: block;
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+    margin: 0;
+    color: var(--sec-heading);
+    font-size: clamp(2.75rem, 4.6vw, 4.75rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  :global(html[lang='km']) .features-section.is-live .feature-short {
+    font-size: clamp(2.5rem, 4.4vw, 4.25rem);
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+
+  .features-section.is-live .feature-lead {
+    display: block;
+    grid-column: 3;
+    grid-row: 3;
+    align-self: end;
+    margin: 0;
+    color: var(--sec-subhead);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  /* Heading and full list: kept for screen readers, not shown over the 3D */
+  .features-section.is-live .feature-title,
+  .features-section.is-live .feature-bullets {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 </style>
+
+<script>
+  import type { FeatureLayout, FeatureText, FeatureTheme } from '../../scripts/feature-scene';
+  import { jumpBy } from '../../scripts/smooth-scroll';
+
+  const section = document.querySelector<HTMLElement>('[data-features]');
+
+  const supportsWebGL = () => {
+    try {
+      return !!document.createElement('canvas').getContext('webgl2');
+    } catch {
+      return false;
+    }
+  };
+
+  // The 3D stage is extra: only with motion welcome and WebGL, and only while the screen is wide enough for
+  // text and phone side by side and the theme isn't high contrast (that keeps the plain layout).
+  if (section && window.matchMedia('(prefers-reduced-motion: no-preference)').matches && supportsWebGL()) {
+    const track = section.querySelector<HTMLElement>('[data-fs-track]')!;
+    const stage = section.querySelector<HTMLElement>('[data-fs-stage]')!;
+    const canvas = section.querySelector<HTMLCanvasElement>('[data-fs-canvas]')!;
+    const rows = [...section.querySelectorAll<HTMLElement>('[data-fs-row]')];
+    const dots = [...section.querySelectorAll<HTMLElement>('[data-fs-dot]')];
+    const textBox = section.querySelector<HTMLElement>('[data-fs-text]')!;
+    const header = document.querySelector<HTMLElement>('.site-header');
+    const html = document.documentElement;
+
+    const clamp = (v: number, a = 0, b = 1) => Math.min(Math.max(v, a), b);
+    const themeName = () => html.getAttribute('data-theme') || 'light';
+    const sceneTheme = (): FeatureTheme => (themeName() === 'dark' ? 'dark' : 'light');
+    const suits = () =>
+      window.innerWidth >= 1024 && window.innerWidth > window.innerHeight && window.innerHeight >= 600 && themeName() !== 'contrast';
+    const readText = () =>
+      Object.fromEntries(
+        [...textBox.querySelectorAll<HTMLElement>('[data-name]')].map((el) => [el.dataset.name, el.textContent ?? ''])
+      ) as FeatureText;
+
+    type Scene = Awaited<ReturnType<typeof import('../../scripts/feature-scene').createFeatureScene>>;
+    let scene: Scene | null = null;
+    let loading = false;
+    let live = false;
+    let onScreen = false;
+
+    const layout = (): FeatureLayout => {
+      section.style.setProperty('--fs-top', `${header?.offsetHeight ?? 0}px`);
+      const W = stage.clientWidth;
+      const H = stage.clientHeight;
+      // Full screen: the phone in the middle, the words in the corners round it
+      return { W, H, cx: W / 2, cy: H * 0.53, size: H * 0.96 }; // clear of the floating logo at the top
+    };
+
+    const progress = () => {
+      const distance = track.offsetHeight - stage.offsetHeight;
+      const top = header?.offsetHeight ?? 0;
+      return clamp((top - track.getBoundingClientRect().top) / distance);
+    };
+
+    let current = -1;
+    const paint = () => {
+      if (!live || !scene) return;
+      const p = progress();
+      const step = p < 0.335 ? 0 : p < 0.665 ? 1 : 2;
+      if (step !== current) {
+        current = step;
+        rows.forEach((row, i) => row.classList.toggle('is-current', i === step));
+        dots.forEach((dot, i) => dot.classList.toggle('is-active', i === step));
+      }
+      scene.setProgress(p);
+      section.dataset.progress = p.toFixed(3);
+    };
+
+    const goLive = () => {
+      if (live || !scene) return;
+      // Switch on the tall pinned layout without moving what the visitor is looking at
+      const before = track.offsetHeight;
+      const passed = track.getBoundingClientRect().bottom <= 0;
+      section.classList.add('is-live');
+      live = true;
+      if (passed) jumpBy(track.offsetHeight - before);
+      current = -1;
+      scene.resize(layout());
+      paint();
+      if (onScreen) scene.start();
+    };
+
+    const goFlat = () => {
+      if (!live) return;
+      const before = track.offsetHeight;
+      const passed = track.getBoundingClientRect().bottom <= 0;
+      scene?.stop();
+      section.classList.remove('is-live');
+      rows.forEach((row) => row.classList.remove('is-current'));
+      live = false;
+      if (passed) jumpBy(track.offsetHeight - before);
+    };
+
+    const update = () => (suits() ? goLive() : goFlat());
+
+    const load = async () => {
+      if (scene || loading || !suits()) return;
+      loading = true;
+      try {
+        const { createFeatureScene } = await import('../../scripts/feature-scene');
+        scene = await createFeatureScene(canvas, readText(), sceneTheme());
+        update();
+      } catch (error) {
+        console.warn('Features 3D stage not shown:', error);
+      }
+      loading = false;
+    };
+
+    // Load when the section is near; animate only while the stage is on screen
+    new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) load();
+      },
+      { rootMargin: '800px 0px' }
+    ).observe(section);
+    new IntersectionObserver((entries) => {
+      onScreen = entries.some((e) => e.isIntersecting);
+      if (!scene || !live) return;
+      if (onScreen && !document.hidden) scene.start();
+      else scene.stop();
+    }).observe(track);
+    document.addEventListener('visibilitychange', () => {
+      if (!scene || !live) return;
+      if (document.hidden) scene.stop();
+      else if (onScreen) scene.start();
+    });
+
+    window.addEventListener('scroll', () => paint(), { passive: true });
+    window.addEventListener('resize', () => {
+      if (!scene) return load();
+      update();
+      if (live) {
+        scene.resize(layout());
+        paint();
+      }
+    });
+    stage.addEventListener('pointermove', (e) => {
+      const r = stage.getBoundingClientRect();
+      scene?.setPointer(((e.clientX - r.left) / r.width) * 2 - 1, ((e.clientY - r.top) / r.height) * 2 - 1);
+    });
+    stage.addEventListener('pointerleave', () => scene?.setPointer(0, 0));
+
+    // Theme and language buttons
+    new MutationObserver(() => {
+      if (!scene) return load();
+      scene.setTheme(sceneTheme());
+      update();
+    }).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+    new MutationObserver(() => scene?.setText(readText())).observe(textBox, { subtree: true, childList: true, characterData: true });
+  }
+</script>

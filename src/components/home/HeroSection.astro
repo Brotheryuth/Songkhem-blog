@@ -884,6 +884,7 @@ const screenText: Record<string, TranslationKey> = {
 
 <script>
   import type { Frame, SceneText } from '../../scripts/phone-scene';
+  import { jumpBy } from '../../scripts/smooth-scroll';
 
   const root = document.querySelector<HTMLElement>('[data-story]');
 
@@ -935,7 +936,7 @@ const screenText: Record<string, TranslationKey> = {
       const before = root.offsetHeight;
       const wasPast = window.scrollY > root.offsetTop + before;
       root.classList.add('is-live');
-      if (wasPast) window.scrollBy(0, root.offsetHeight - before);
+      if (wasPast) jumpBy(root.offsetHeight - before);
 
       let wide = false;
 

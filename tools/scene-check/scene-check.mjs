@@ -72,6 +72,7 @@ for (const path of ['/', '/km']) {
   await scrollTo(page, 0.24);
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${out}lang-en.png` });
+  await page.locator('#menu-toggle').click(); // the language button lives in the menu
   await page.locator('#lang-toggle').click();
   await page.waitForTimeout(500);
   const labels = await page.locator('[data-screen-text] [data-name="further"]').textContent();

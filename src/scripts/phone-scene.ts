@@ -5,8 +5,9 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 import { createHand } from './hand-rig';
-import { APP_FONTS, APP_FONTS_CSS, UW, createAppScreen, type AppState, type AppText } from './app-screen';
+import { UW, createAppScreen, loadAppFonts, type AppState, type AppText } from './app-screen';
 import { createPhoneModel, roundedShape } from './phone-model';
+import { BODY_WORDS, KHMER, TITLE_WORDS, WORDS } from './scene-words';
 
 // The hand is an MPFB 2 / MakeHuman model (CC0), posed and skinned for this site: /models/hand/license.txt
 const handModelUrl = '/models/hand/hand.glb';
@@ -25,15 +26,6 @@ export type Frame = {
   hero: { x: number; y: number; w: number; h: number };
   main: { x: number; y: number; w: number; h: number };
 };
-
-const TITLE_WORDS = ['រឿង', 'ព្រេង', '៖', 'ធនញ្ជ័យ'];
-const BODY_WORDS = [
-  'កាលពី', 'ព្រេង', 'នាយ', 'មាន', 'កុមារ', 'ម្នាក់', 'ឈ្មោះធនញ្ជ័យ', 'ជា', 'ក្មេង', 'ឆ្លាតវៃ', 'និង', 'មាន',
-  'ប្រាជ្ញាលើស', 'ក្មេង', 'ដទៃ', '។', 'ធនញ្ជ័យ', 'តែងតែយក', 'ចំណេះ', 'ដឹង', 'និង', 'ប្រាជ្ញា', 'ស្មារតី', 'របស់',
-  'ខ្លួនមកដោះ', 'ស្រាយ', 'បញ្ហា', 'លំបាកៗ', 'ក្នុង', 'ភូមិ', 'និងជួយ', 'ដល់', 'ប្រជាជន', 'ស្លូត', 'ត្រង់', '។',
-];
-const WORDS = [...TITLE_WORDS, ...BODY_WORDS];
-const KHMER = '"Kantumruy Pro", "Noto Sans Khmer", sans-serif';
 
 // Phone size in centimetres.
 // The hand was posed in Blender round a phone exactly this size, so these must not change.
@@ -122,24 +114,8 @@ function woodTexture() {
 }
 
 export async function createPhoneScene(canvas: HTMLCanvasElement, initialText: SceneText) {
-  // The app's fonts (Roboto and Noto Sans Khmer as Android draws them, Suwannaphum for documents), only for
-  // the phone screen, so the rest of the page doesn't wait for them.
-  if (!document.querySelector(`link[href="${APP_FONTS_CSS}"]`)) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = APP_FONTS_CSS;
-    document.head.appendChild(link);
-    await new Promise((resolve) => {
-      link.onload = resolve;
-      link.onerror = resolve;
-      setTimeout(resolve, 4000);
-    });
-  }
-  await Promise.race([
-    // Sample text in both scripts, so the Khmer and Latin parts of each font (separate files) both load
-    Promise.all([`400 20px ${KHMER}`, `700 20px ${KHMER}`, ...APP_FONTS].map((f) => document.fonts.load(f, 'កខគ Aa1'))),
-    new Promise((resolve) => setTimeout(resolve, 4000)),
-  ]).catch(() => undefined);
+  // The app's fonts, plus the printed page's
+  await loadAppFonts([`400 20px ${KHMER}`, `700 20px ${KHMER}`]);
 
   let text = initialText;
 
