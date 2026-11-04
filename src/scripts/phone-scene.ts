@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 import { createHand } from './hand-rig';
 import { APP_FONTS, APP_FONTS_CSS, UW, createAppScreen, type AppState, type AppText } from './app-screen';
 import { createPhoneModel, roundedShape } from './phone-model';
@@ -10,6 +11,9 @@ import { createPhoneModel, roundedShape } from './phone-model';
 // The hand is an MPFB 2 / MakeHuman model (CC0), posed and skinned for this site: /models/hand/license.txt
 const handModelUrl = '/models/hand/hand.glb';
 const handGlossUrl = '/models/hand/hand_gloss.webp';
+const handAoUrl = '/models/hand/hand_ao.webp';
+// A real photo studio's light (Poly Haven, CC0): /models/light/license.txt
+const studioLightUrl = '/models/light/studio.hdr';
 
 /** The app's own words for its screens, in the page's language. */
 export type SceneText = AppText;
@@ -142,7 +146,7 @@ export async function createPhoneScene(canvas: HTMLCanvasElement, initialText: S
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap; // softened by the light's shadow.radius
   // Shadows are worked out once per frame and shared by both cameras.
   renderer.shadowMap.autoUpdate = false;
   renderer.setClearColor(0x000000, 0);
@@ -260,12 +264,22 @@ export async function createPhoneScene(canvas: HTMLCanvasElement, initialText: S
   phone.add(screenShade);
 
   try {
-    const [gltf, gloss] = await Promise.all([
+    const texture = (url: string) => new THREE.TextureLoader().loadAsync(url).catch(() => undefined);
+    const [gltf, gloss, ao, studio] = await Promise.all([
       new GLTFLoader().loadAsync(handModelUrl),
-      // Nails, skin shine and thin-skin glow; the hand still shows without it
-      new THREE.TextureLoader().loadAsync(handGlossUrl).catch(() => undefined),
+      // The extras below make the hand and phone look more real; the scene still works without them
+      texture(handGlossUrl),
+      texture(handAoUrl),
+      new HDRLoader().loadAsync(studioLightUrl).catch(() => undefined),
     ]);
-    const rig = createHand(gltf, hand, gloss);
+    let light: THREE.Texture | undefined;
+    if (studio) {
+      studio.mapping = THREE.EquirectangularReflectionMapping;
+      light = pmrem.fromEquirectangular(studio).texture;
+      studio.dispose();
+      phoneModel.setStudioLight(light);
+    }
+    const rig = createHand(gltf, hand, { gloss, ao, light });
     // The wrist turns a little (about 30 degrees) so the forearm comes from the bottom right, like your own arm.
     rig.pointForearm(new THREE.Vector3(0.49, -0.86, -0.11));
     rig.addSleeve(new THREE.MeshStandardMaterial({ color: 0x1e2b4a, roughness: 0.85 }));

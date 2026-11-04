@@ -17,12 +17,43 @@ const q = () => new THREE.Quaternion();
  * fingertips and knuckles shine a little more than the matte creases, and thin skin (fingers, tips)
  * glows warm where light passes through it, strongest at the edges.
  */
-function skinMaterial(source: THREE.MeshStandardMaterial, gloss?: THREE.Texture) {
+export type HandMaps = {
+  /** R = nails, G = roughness, B = thin skin (baked from the skin masks) */
+  gloss?: THREE.Texture;
+  /** Ambient occlusion baked in the grip pose, with the phone there: creases, between fingers, contact */
+  ao?: THREE.Texture;
+  /** A real studio's light (prefiltered), for the skin's reflections and soft fill */
+  light?: THREE.Texture;
+};
+
+// Skin's own direct lighting, on top of three.js's physical model:
+// - light carries a little past the shadow line, reddened (skin scatters red light furthest),
+// - thin skin (fingers, tips, the web) glows when lit from behind,
+// - a second, sharper shine from the skin's oily surface over the soft one.
+const SKIN_LIGHT = /* glsl */ `
+float skinThin = 0.0;
+void RE_Direct_Skin( const in IncidentLight directLight, const in vec3 geometryPosition, const in vec3 geometryNormal, const in vec3 geometryViewDir, const in vec3 geometryClearcoatNormal, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
+  RE_Direct_Physical( directLight, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );
+  float NdL = dot( geometryNormal, directLight.direction );
+  float wrapped = saturate( ( NdL + 0.5 ) / 1.5 ) - saturate( NdL );
+  reflectedLight.directDiffuse += directLight.color * material.diffuseColor * vec3( 0.42, 0.17, 0.1 ) * wrapped * ( 0.5 + 0.5 * skinThin );
+  float behind = pow( saturate( dot( geometryViewDir, -directLight.direction ) ), 3.0 );
+  reflectedLight.directDiffuse += directLight.color * material.diffuseColor * vec3( 1.0, 0.3, 0.16 ) * behind * skinThin * 0.55;
+  vec3 halfway = normalize( directLight.direction + geometryViewDir );
+  float oily = pow( saturate( dot( geometryNormal, halfway ) ), 80.0 ) * saturate( NdL );
+  reflectedLight.directSpecular += directLight.color * oily * 0.06 * ( 1.0 - material.roughness );
+}
+#undef RE_Direct
+#define RE_Direct RE_Direct_Skin
+`;
+
+function skinMaterial(source: THREE.MeshStandardMaterial, { gloss, ao, light }: HandMaps) {
   const material = new THREE.MeshPhysicalMaterial({
     map: source.map,
     color: new THREE.Color(1.0, 0.9, 0.82), // a little warmer and deeper than the bare texture
     normalMap: source.normalMap,
-    normalScale: new THREE.Vector2(1.3, 1.3),
+    // Strong enough for the palm lines and creases to read under the soft studio light
+    normalScale: new THREE.Vector2(2, 2),
     roughness: 0.55,
     metalness: 0,
     // Less flat light from the room around it, so the hand keeps its shading and colour.
@@ -31,6 +62,14 @@ function skinMaterial(source: THREE.MeshStandardMaterial, gloss?: THREE.Texture)
     sheenColor: new THREE.Color(0xd08060),
     sheenRoughness: 0.6,
   });
+  if (light) {
+    material.envMap = light;
+    material.envMapIntensity = 1.15;
+  }
+  if (ao) {
+    material.aoMap = ao;
+    material.aoMapIntensity = 1;
+  }
   if (gloss) {
     material.roughness = 1;
     material.roughnessMap = gloss;
@@ -40,28 +79,30 @@ function skinMaterial(source: THREE.MeshStandardMaterial, gloss?: THREE.Texture)
     material.onBeforeCompile = (shader) => {
       shader.uniforms.glossMap = { value: gloss };
       shader.fragmentShader = shader.fragmentShader
+        .replace('#include <lights_physical_pars_fragment>', `#include <lights_physical_pars_fragment>\n${SKIN_LIGHT}`)
         .replace('void main() {', 'uniform sampler2D glossMap;\nvoid main() {')
         // Nails: the pink of the nail bed under the plate (the baked nail colour is very pale)
         .replace(
           '#include <map_fragment>',
           `#include <map_fragment>
-          diffuseColor.rgb *= mix( vec3( 1.0 ), vec3( 0.97, 0.80, 0.76 ), texture2D( glossMap, vMapUv ).r * 0.85 );`
+          vec3 glossTexel = texture2D( glossMap, vMapUv ).rgb;
+          skinThin = glossTexel.b;
+          diffuseColor.rgb *= mix( vec3( 1.0 ), vec3( 0.97, 0.80, 0.76 ), glossTexel.r * 0.85 );`
         )
         .replace(
           '#include <opaque_fragment>',
           `{
-            vec3 g = texture2D( glossMap, vMapUv ).rgb;
             float facing = saturate( dot( normal, normalize( vViewPosition ) ) );
             float rim = pow( 1.0 - facing, 2.0 );
-            // Light through thin skin: warm, strongest where the skin turns away from view
-            outgoingLight += diffuseColor.rgb * vec3( 1.0, 0.36, 0.24 ) * g.b * ( 0.06 + 0.32 * rim );
+            // Thin skin at the silhouette: a faint warm edge (the main glow comes from the lighting above)
+            outgoingLight += diffuseColor.rgb * vec3( 1.0, 0.36, 0.24 ) * glossTexel.b * 0.16 * rim;
             // Nail plate: a glassy sheen towards its edges, from any angle
-            outgoingLight += vec3( 0.9, 0.92, 1.0 ) * g.r * ( 0.03 + 0.22 * rim );
+            outgoingLight += vec3( 0.9, 0.92, 1.0 ) * glossTexel.r * ( 0.03 + 0.22 * rim );
           }
           #include <opaque_fragment>`
         );
     };
-    material.customProgramCacheKey = () => 'hand-skin-gloss';
+    material.customProgramCacheKey = () => 'hand-skin-v2';
   }
   material.userData.hand = true; // tone-mapped like the Blender renders; the rest of the scene is not
   return material;
@@ -71,17 +112,18 @@ function skinMaterial(source: THREE.MeshStandardMaterial, gloss?: THREE.Texture)
  * Sets the hand up in `parent`'s space, which must be the phone's own space (centimetres, screen facing +z).
  * Returns functions that move the thumb and point the forearm.
  */
-export function createHand(gltf: GLTF, parent: THREE.Object3D, gloss?: THREE.Texture) {
+export function createHand(gltf: GLTF, parent: THREE.Object3D, maps: HandMaps = {}) {
   const model = gltf.scene;
-  if (gloss) {
-    gloss.flipY = false; // same UV layout as the model's own textures (glTF convention)
-    gloss.colorSpace = THREE.NoColorSpace;
-    gloss.needsUpdate = true;
+  for (const tex of [maps.gloss, maps.ao]) {
+    if (!tex) continue;
+    tex.flipY = false; // same UV layout as the model's own textures (glTF convention)
+    tex.colorSpace = THREE.NoColorSpace;
+    tex.needsUpdate = true;
   }
   model.traverse((o) => {
     const mesh = o as THREE.SkinnedMesh;
     if (mesh.isSkinnedMesh) {
-      mesh.material = skinMaterial(mesh.material as THREE.MeshStandardMaterial, gloss);
+      mesh.material = skinMaterial(mesh.material as THREE.MeshStandardMaterial, maps);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       mesh.frustumCulled = false;
@@ -198,6 +240,7 @@ export function createHand(gltf: GLTF, parent: THREE.Object3D, gloss?: THREE.Tex
     if (mat?.map) textures.push(mat.map);
     if (mat?.normalMap) textures.push(mat.normalMap);
     if (mat?.roughnessMap && !textures.includes(mat.roughnessMap)) textures.push(mat.roughnessMap);
+    if (mat?.aoMap && !textures.includes(mat.aoMap)) textures.push(mat.aoMap);
   });
 
   return { setThumb, pointForearm, addSleeve, forearmDirection, textures };

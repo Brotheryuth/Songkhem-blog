@@ -1,6 +1,7 @@
 ---
 import backgroundSvg from '../../assets/background.svg';
 import { useTranslations, type Language, type TranslationKey } from '../../i18n/translations';
+import { APP_FONTS_CSS, ICONS, SIGNAL } from '../../scripts/app-screen';
 
 interface Props {
   lang?: Language;
@@ -8,6 +9,13 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
+
+// The app's own icons (lucide-react-native) as inline SVG, for the flat phones
+const icon = (name: string, size: number, fill = 'none') =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${fill === 'none' ? 'currentColor' : fill}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]
+    .map(([tag, attrs]) => `<${tag} ${Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(' ')}/>`)
+    .join('')}</svg>`;
+const signalIcon = `<svg width="23" height="28" viewBox="0 0 41 51" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${SIGNAL.map((d) => `<path d="${d}"/>`).join('')}</svg>`;
 
 const titleWords = ['រឿង', 'ព្រេង', '៖', 'ធនញ្ជ័យ'];
 const bodyWords = [
@@ -61,46 +69,74 @@ const screenText: Record<string, TranslationKey> = {
         </a>
       </div>
 
-      <!-- Flat picture of the app, shown when the 3D scene is off (less motion, no WebGL, no JavaScript). -->
+      <!-- Flat picture of the real app (same layout as app-screen.ts, in dp, scaled to fit), shown when the
+           3D scene is off: less motion, no WebGL or no JavaScript. -->
+      <link rel="stylesheet" href={APP_FONTS_CSS} />
       <div class="story-scene" aria-hidden="true" data-scene>
         <div class="phone phone-camera">
-          <div class="phone-screen">
-            <div class="app-bar">
-              <span class="app-logo"></span>
-              <span class="app-brand">
-                <span class="app-name">SongKhem</span>
-                <span class="app-sub" data-i18n="scene.brandSub">{t('scene.brandSub')}</span>
-              </span>
-              <span class="app-icons"><i></i><i></i><i></i></span>
-            </div>
-            <div class="viewfinder">
-              <div class="vf-page">
-                <p class="vf-page-title">{pageTitle}</p>
-                <p class="vf-page-text">{pageText}</p>
+          <div class="phone-glass">
+            <div class="app">
+              <div class="app-status app-status-header">
+                <span>9:41</span><span class="status-icons"><i class="s-wifi"></i><i class="s-signal"></i><i class="s-battery"></i></span>
               </div>
-              <div class="vf-pill"><span class="vf-pill-icon"></span><span data-i18n="scene.ready">{t('scene.ready')}</span></div>
-              <span class="shutter"></span>
-            </div>
-            <div class="app-tabs">
-              <span class="app-tab is-on"><i class="tab-icon"></i><span data-i18n="scene.camera">{t('scene.camera')}</span></span>
-              <span class="app-tab"><i class="tab-icon"></i><span data-i18n="scene.upload">{t('scene.upload')}</span></span>
-              <span class="app-tab"><i class="tab-icon"></i><span data-i18n="scene.history">{t('scene.history')}</span></span>
+              <div class="app-header">
+                <img class="app-logo" src="/app-ui/logo-mark.png" alt="" width="32" height="32" />
+                <span class="app-name">SongKhem</span>
+                <span class="app-actions"><Fragment set:html={icon('languages', 22)} /><Fragment set:html={icon('help', 22)} /><Fragment set:html={icon('settings', 22)} /></span>
+              </div>
+              <div class="app-deck">
+                <div class="cam-frame">
+                  <div class="cam-page">
+                    <p class="cam-page-title">{pageTitle}</p>
+                    <p class="cam-page-text">{pageText}</p>
+                  </div>
+                  <div class="cam-guide">
+                    <span class="cam-guide-icon"><Fragment set:html={icon('scan', 18)} /></span>
+                    <span data-i18n="scene.ready">{t('scene.ready')}</span>
+                  </div>
+                  <span class="cam-shutter"></span>
+                </div>
+              </div>
+              <div class="app-tabs">
+                <span class="app-tab is-on"><span class="tab-pill"><Fragment set:html={icon('camera', 24)} /></span><span data-i18n="scene.camera">{t('scene.camera')}</span></span>
+                <span class="app-tab"><span class="tab-pill"><Fragment set:html={icon('upload', 24)} /></span><span data-i18n="scene.upload">{t('scene.upload')}</span></span>
+                <span class="app-tab"><span class="tab-pill"><Fragment set:html={icon('history', 24)} /></span><span data-i18n="scene.history">{t('scene.history')}</span></span>
+              </div>
+              <span class="nav-handle"></span>
             </div>
           </div>
         </div>
 
         <div class="phone phone-reader">
-          <div class="phone-screen">
-            <div class="reader-bar"><span class="reader-back"></span><span data-i18n="scene.readerTitle">{t('scene.readerTitle')}</span><span class="reader-gear"></span></div>
-            <div class="reader-text">
-              <p>{titleWords.map((word) => <><span class="word">{word}</span>{' '}</>)}</p>
-              <p>{bodyWords.map((word, index) => <><span class:list={['word', { 'is-on': index === 0 }]}>{word}</span>{' '}</>)}</p>
-            </div>
-            <div class="player">
-              <div class="player-row"><span>សុខា</span><span>•••</span></div>
-              <span class="player-track"><span class="player-fill"></span></span>
-              <div class="player-row"><span>0:00</span><span>-0:20</span></div>
-              <div class="player-controls"><i class="ctl-prev"></i><i class="ctl-play"></i><i class="ctl-next"></i></div>
+          <div class="phone-glass">
+            <div class="app">
+              <div class="app-status">
+                <span>9:41</span><span class="status-icons"><i class="s-wifi"></i><i class="s-signal"></i><i class="s-battery"></i></span>
+              </div>
+              <div class="reader-bar">
+                <Fragment set:html={icon('back', 24)} />
+                <span data-i18n="scene.readerTitle">{t('scene.readerTitle')}</span>
+                <Fragment set:html={icon('settings', 22)} />
+              </div>
+              <div class="reader-text">
+                <p>{titleWords.map((word) => <><span class="word">{word}</span>{' '}</>)}</p>
+                <p>{bodyWords.map((word, index) => <><span class:list={['word', { 'is-on': index === 9 }]}>{word}</span>{' '}</>)}</p>
+              </div>
+              <span class="reader-fab"><Fragment set:html={signalIcon} /></span>
+              <div class="player">
+                <div class="player-head">
+                  <span class="voice-tag"><Fragment set:html={icon('volume', 15)} /><span data-i18n="scene.voice">{t('scene.voice')}</span></span>
+                  <Fragment set:html={icon('more', 20)} />
+                </div>
+                <span class="player-track"><span class="player-fill"></span></span>
+                <div class="player-times"><span>0:04</span><span>-0:12</span></div>
+                <div class="player-controls">
+                  <span class="ctl"><Fragment set:html={icon('skipBack', 24)} /></span>
+                  <span class="ctl ctl-play"><Fragment set:html={icon('pause', 30, '#FFFFFF')} /></span>
+                  <span class="ctl"><Fragment set:html={icon('skipForward', 24)} /></span>
+                </div>
+              </div>
+              <span class="nav-handle"></span>
             </div>
           </div>
         </div>
@@ -246,7 +282,7 @@ const screenText: Record<string, TranslationKey> = {
     }
   }
 
-  /* ---------- Flat phones (fallback) ---------- */
+  /* ---------- Flat phones (fallback): the real app, laid out in dp like app-screen.ts ---------- */
   .story-scene {
     display: flex;
     justify-content: center;
@@ -258,12 +294,26 @@ const screenText: Record<string, TranslationKey> = {
     position: relative;
     flex: none;
     width: 300px;
-    height: 620px;
-    margin: calc(-310px * (1 - var(--ps))) calc(-150px * (1 - var(--ps)));
+    height: 627px;
+    margin: calc(-313px * (1 - var(--ps))) calc(-150px * (1 - var(--ps)));
     padding: 10px;
     border-radius: 46px;
-    background: #18264F;
-    box-shadow: inset 0 0 0 2px #2A3A63, 0 24px 36px rgba(0, 0, 0, 0.16);
+    background: linear-gradient(145deg, #2C3A5E, #18264F 45%, #111B38);
+    box-shadow: inset 0 0 0 2px #3A4A73, inset 0 0 0 5px #05070D, 0 24px 36px rgba(0, 0, 0, 0.16);
+  }
+
+  /* punch-hole selfie camera */
+  .phone::before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 22px;
+    width: 11px;
+    height: 11px;
+    margin-left: -5.5px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 38%, #3A4060 0 18%, #07080D 30%);
   }
 
   .phone-camera {
@@ -277,147 +327,214 @@ const screenText: Record<string, TranslationKey> = {
     transform: translateY(-32px) scale(var(--ps)) rotate(2deg);
   }
 
-  .phone-screen {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  .phone-glass {
+    width: 280px;
+    height: 607px;
     overflow: hidden;
     border-radius: 36px;
     background: #F8FAFC;
-    color: #1F2937;
-    font-family: 'Kantumruy Pro', var(--font-sans);
+  }
+
+  /* The app at its real size (411 x 891 dp), scaled to the glass */
+  .app {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 411px;
+    height: 891px;
+    transform: scale(calc(280 / 411));
+    transform-origin: 0 0;
+    background: #F8FAFC;
+    color: #0F172A;
+    font-family: 'Roboto', 'Noto Sans Khmer', sans-serif;
     letter-spacing: 0;
   }
 
-  .app-bar {
+  .app :global(svg) {
+    flex: none;
+    display: block;
+  }
+
+  .app-status {
     display: flex;
     align-items: center;
-    gap: 8px;
-    height: 58px;
-    padding: 14px 16px 0;
+    justify-content: space-between;
+    height: 48px;
+    padding: 0 32px 0 31px;
     flex: none;
+    font-size: 14.5px;
+    color: #1F1F1F;
+  }
+
+  .app-status-header {
+    background: #FFFFFF;
+  }
+
+  .status-icons {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+  }
+
+  .s-wifi {
+    width: 15px;
+    height: 11px;
+    background: #1F1F1F;
+    clip-path: polygon(50% 100%, 0 25%, 15% 8%, 50% 0, 85% 8%, 100% 25%);
+  }
+
+  .s-signal {
+    width: 11px;
+    height: 12px;
+    background: #1F1F1F;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+
+  .s-battery {
+    width: 8px;
+    height: 14px;
+    border-radius: 1.5px;
+    background: #1F1F1F;
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding: 0 16px;
+    flex: none;
+    background: #FFFFFF;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    color: #444746;
   }
 
   .app-logo {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    background: #2F4FC8;
-  }
-
-  .app-brand {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.15 !important;
+    width: 32px;
+    height: 32px;
+    margin: 0 14px 0 2px;
   }
 
   .app-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: #111827;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: #1F1F1F;
   }
 
-  .app-sub {
-    font-size: 8px;
-    color: #4B5563;
-  }
-
-  .app-icons {
+  .app-actions {
     display: flex;
-    gap: 9px;
-    margin-left: auto;
+    gap: 26px;
+    margin: 0 11px 0 auto;
   }
 
-  .app-icons i {
-    width: 13px;
-    height: 13px;
-    border: 2px solid #374151;
-    border-radius: 50%;
-  }
-
-  .viewfinder {
-    position: relative;
+  .app-deck {
     flex: 1;
-    margin: 4px 8px 8px;
-    overflow: hidden;
+    margin: 8px;
+    padding: 8px;
     border-radius: 16px;
+    background: #F8FAFC;
+  }
+
+  .cam-frame {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
     background:
       repeating-linear-gradient(92deg, rgba(43, 26, 15, 0.22) 0 2px, transparent 2px 13px),
-      radial-gradient(ellipse at 40% 30%, #8F6A4A 0%, #6A4A30 55%, #452F1E 100%);
+      radial-gradient(ellipse at 40% 30%, #9A7351 0%, #6E4C31 55%, #4A321F 100%);
   }
 
-  .vf-page {
+  .cam-page {
     position: absolute;
     left: 50%;
-    top: 50%;
-    width: 200px;
-    height: 264px;
-    margin: -132px 0 0 -100px;
-    padding: 18px 16px;
+    top: 47%;
+    width: 268px;
+    height: 356px;
+    margin: -178px 0 0 -134px;
+    padding: 24px 22px;
     background: #FBF8EF;
     color: #1B1B1B;
-    outline: 3px solid #22C55E;
+    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', sans-serif;
+    outline: 4px solid #EF4444;
+    outline-offset: 2px;
     transform: rotate(-2deg);
   }
 
-  .vf-page-title {
-    margin-bottom: 6px;
+  .cam-page-title {
+    margin-bottom: 8px;
     text-align: center;
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.8 !important;
   }
 
-  .vf-page-text {
-    font-size: 9px;
+  .cam-page-text {
+    font-size: 12px;
     line-height: 2 !important;
   }
 
-  .vf-pill {
+  .cam-guide {
     position: absolute;
-    left: 10px;
-    right: 10px;
-    top: 10px;
+    top: 14px;
+    left: 50%;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 12px 7px 8px;
-    border-radius: 18px;
-    background: rgba(17, 24, 39, 0.88);
+    max-width: calc(100% - 24px);
+    padding: 7px 14px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9999px;
+    background: rgba(23, 27, 34, 0.85);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
     color: #FFFFFF;
-    font-size: 9.5px;
-    line-height: 1.5 !important;
+    font-size: 13.6px;
+    font-weight: 500;
+    line-height: 18px !important;
+    letter-spacing: 0.1px;
   }
 
-  .vf-pill-icon {
-    flex: none;
-    width: 16px;
-    height: 16px;
+  .cam-guide-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    border: 2px dashed #93C5FD;
+    background: rgba(168, 199, 250, 0.16);
+    color: #A8C7FA;
   }
 
-  .shutter {
+  .cam-shutter {
     position: absolute;
     left: 50%;
-    bottom: 22px;
-    width: 56px;
-    height: 56px;
-    margin-left: -28px;
+    bottom: 14px;
+    width: 64px;
+    height: 64px;
+    margin-left: -32px;
+    border: 4px solid #FFFFFF;
     border-radius: 50%;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.45);
+    background: radial-gradient(circle, #FFFFFF 0 24px, rgba(255, 255, 255, 0.2) 24.5px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
   }
 
   .app-tabs {
     display: flex;
     justify-content: space-around;
-    height: 64px;
-    padding-top: 8px;
+    align-items: center;
+    height: 104px;
+    padding: 0 16px 24px;
     flex: none;
-    background: #EEF2F7;
-    font-size: 9px;
-    color: #4B5563;
+    background: #F0F4F9;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    color: #444746;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px !important;
+    letter-spacing: 0.1px;
   }
 
   .app-tab {
@@ -425,133 +542,172 @@ const screenText: Record<string, TranslationKey> = {
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    width: 120px;
+  }
+
+  .tab-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 32px;
+    border-radius: 16px;
   }
 
   .app-tab.is-on {
-    color: #111827;
-    font-weight: 700;
+    color: #041E49;
+    font-weight: 600;
   }
 
-  .tab-icon {
-    width: 40px;
-    height: 22px;
-    border-radius: 999px;
+  .app-tab.is-on .tab-pill {
+    background: #C2E7FF;
   }
 
-  .app-tab.is-on .tab-icon {
-    background: #C7E0FF;
+  .nav-handle {
+    position: absolute;
+    left: 50%;
+    bottom: 8.5px;
+    width: 108px;
+    height: 4px;
+    margin-left: -54px;
+    border-radius: 2px;
+    background: #1F1F1F;
   }
 
   .reader-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 60px;
-    padding: 14px 18px 0;
+    height: 56px;
+    padding: 0 20px;
     flex: none;
-    border-bottom: 1px solid #DCE3EE;
-    font-size: 13px;
-    color: #111827;
-  }
-
-  .reader-back {
-    width: 12px;
-    height: 12px;
-    border-left: 2px solid #111827;
-    border-bottom: 2px solid #111827;
-    transform: rotate(45deg);
-  }
-
-  .reader-gear {
-    width: 14px;
-    height: 14px;
-    border: 2px solid #111827;
-    border-radius: 50%;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CBD5E1;
+    font-family: 'Suwannaphum', 'Noto Sans Khmer', serif;
+    font-size: 19px;
+    font-weight: 700;
   }
 
   .reader-text {
     flex: 1;
-    padding: 18px 16px 0;
-    font-size: 14.5px;
-    color: #111827;
+    padding: 20px;
+    font-family: 'Suwannaphum', 'Noto Sans Khmer', serif;
+    font-size: 18px;
   }
 
   .reader-text p {
-    margin-bottom: 6px;
-    line-height: 2.15 !important;
-  }
-
-  .word {
-    padding: 2px 3px;
-    border-radius: 4px;
+    margin-bottom: 24px;
+    line-height: 1.85 !important;
   }
 
   .word.is-on {
+    padding: 6px 0;
     background: #FEF08A;
+  }
+
+  .reader-fab {
+    position: absolute;
+    right: 18px;
+    bottom: 210px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid #3353E2;
+    border-radius: 50%;
+    background: #4466F6;
+    box-shadow: 0 4px 12px rgba(68, 102, 246, 0.35);
   }
 
   .player {
     flex: none;
-    padding: 10px 20px 18px;
-    border-top: 1px solid #DCE3EE;
-    font-size: 9px;
-    color: #374151;
+    height: 194px;
+    padding: 8px 16px 34px;
+    background: #FFFFFF;
+    border-top: 1px solid #CBD5E1;
+    color: #334155;
   }
 
-  .player-row {
+  .player-head {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-top: 4px;
+    height: 44px;
+    padding: 0 16px 0 4px;
+  }
+
+  .voice-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 9999px;
+    background: rgba(148, 163, 184, 0.14);
+    font-family: 'Suwannaphum', 'Noto Sans Khmer', serif;
+    font-size: 12px;
+    font-weight: 700;
   }
 
   .player-track {
+    position: relative;
     display: block;
     height: 4px;
-    margin-top: 10px;
-    border-radius: 999px;
-    background: #DCE3EE;
+    margin: 16px 0 12px;
+    border-radius: 9999px;
+    background: rgba(148, 163, 184, 0.35);
+  }
+
+  .player-fill {
+    position: absolute;
+    inset: 0 75% 0 0;
+    border-radius: 9999px;
+    background: #4466F6;
+  }
+
+  .player-fill::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: -4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4466F6;
+  }
+
+  .player-times {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -6px;
+    font-size: 12px;
+    font-weight: 600;
   }
 
   .player-controls {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 34px;
-    margin-top: 8px;
+    gap: 36px;
+    margin-top: 2px;
   }
 
-  .ctl-prev,
-  .ctl-next {
-    width: 0;
-    height: 0;
-    border-top: 7px solid transparent;
-    border-bottom: 7px solid transparent;
-  }
-
-  .ctl-prev {
-    border-right: 10px solid #111827;
-  }
-
-  .ctl-next {
-    border-left: 10px solid #111827;
+  .ctl {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #F1F5F9;
   }
 
   .ctl-play {
-    position: relative;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: #3B5BDB;
-  }
-
-  .ctl-play::after {
-    content: '';
-    position: absolute;
-    left: 18px;
-    top: 14px;
-    border-top: 9px solid transparent;
-    border-bottom: 9px solid transparent;
-    border-left: 13px solid #FFFFFF;
+    width: 56px;
+    height: 56px;
+    background: #3353E2;
+    box-shadow: 0 4px 12px rgba(68, 102, 246, 0.4);
   }
 
   /* ---------- 3D scene: pinned, and every part moves with the scroll ---------- */
