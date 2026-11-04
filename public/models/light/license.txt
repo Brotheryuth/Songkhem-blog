@@ -1,0 +1,2 @@
+studio.hdr: "Studio Small 09" by Sergej Majboroda, from Poly Haven (https://polyhaven.com/a/studio_small_09).
+Licence: CC0 (public domain), no credit required. Shrunk to 256 x 128 with tools/hand/shrink-hdr.mjs.

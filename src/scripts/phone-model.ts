@@ -57,17 +57,21 @@ export function createPhoneModel({ PW, PH, PD, SW, SH, corner }: Size) {
   });
   bodyGeometry.translate(0, 0, -(PD - bevel * 2) / 2);
   const body = shadowy(new THREE.Mesh(bodyGeometry, frameMat));
+  // The fingers and palm cast their shadows on the frame and glass where they hold it
+  body.receiveShadow = true;
   group.add(body);
 
   // Frosted glass back, sitting in the frame
   const back = new THREE.Mesh(new THREE.ShapeGeometry(roundedShape(PW - 0.18, PH - 0.18, corner - 0.09), 24), backMat);
   back.rotation.y = Math.PI;
   back.position.z = -PD / 2 - 0.004;
+  back.receiveShadow = true;
   group.add(back);
 
   // Front glass: black, edge to edge, over the frame's front face
   const front = new THREE.Mesh(new THREE.ShapeGeometry(roundedShape(PW - 0.16, PH - 0.16, corner - 0.08), 24), blackGlass);
   front.position.z = PD / 2 + 0.003;
+  front.receiveShadow = true;
   group.add(front);
 
   // ---------- Front details ----------
@@ -212,6 +216,13 @@ export function createPhoneModel({ PW, PH, PD, SW, SH, corner }: Size) {
     setEnvironment(env: THREE.Texture) {
       glare.envMap = env;
       glare.needsUpdate = true;
+    },
+    /** A real studio's light for the metal, glass and lenses (prefiltered environment map) */
+    setStudioLight(env: THREE.Texture) {
+      for (const m of [frameMat, backMat, islandMat, blackGlass, ringMat, lensCoat]) {
+        m.envMap = env;
+        m.needsUpdate = true;
+      }
     },
   };
 }
