@@ -111,7 +111,7 @@ html {
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  scroll-padding-top: 0; /* no header bar to clear */
 }
 
 body {
@@ -126,7 +126,7 @@ body {
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  scroll-padding-top: 0; /* no header bar to clear */
 }
 
 body {

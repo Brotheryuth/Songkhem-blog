@@ -14,9 +14,26 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
+
+// The scroll story (wide screens): each phase's photos fly in one by one, then settle into a collage
+const phases = [
+  { tag: 'stories.stage1.tag', title: 'stories.stage1.title', photos: [interviewee1, interviewee2] },
+  { tag: 'stories.stage2.tag', title: 'stories.stage2.title', photos: [keUni, keSprint] },
+  { tag: 'stories.stage3.tag', title: 'stories.stage3.title', photos: [visit1, visit2] },
+] as const;
+// Small blocks of the brand's colours that drift in with the photos
+const chips = [
+  { c: '#4466F6', x: 0.07, y: 0.3, w: 46, h: 30 },
+  { c: '#FEF08A', x: 0.33, y: 0.2, w: 34, h: 24 },
+  { c: '#0B1B4D', x: 0.55, y: 0.92, w: 52, h: 34 },
+  { c: '#A8C7FA', x: 0.96, y: 0.45, w: 30, h: 22 },
+  { c: '#F2C94C', x: 0.27, y: 0.74, w: 40, h: 28 },
+  { c: '#4466F6', x: 0.74, y: 0.06, w: 26, h: 18 },
+  { c: '#C2E7FF', x: 0.5, y: 0.32, w: 60, h: 40 },
+];
 ---
 
-<section id="stories" class="stories-section" aria-labelledby="stories-title">
+<section id="stories" class="stories-section" aria-labelledby="stories-title" data-stories>
   <div class="container-max stories-container">
     <!-- Stories Section Header -->
     <header class="stories-header">
@@ -117,6 +134,38 @@ const t = useTranslations(lang);
         </div>
       </div>
     </article>
+  </div>
+
+  <!-- Scroll story (wide screens, motion welcome): a pinned stage the photos fly into. A visual copy of the
+       content above, which stays in the page for screen readers. -->
+  <div class="st-track" data-st-track>
+    <div class="st-stage" data-st-stage aria-hidden="true">
+      <div class="st-dots"><span data-st-dot></span><span data-st-dot></span><span data-st-dot></span></div>
+      <div class="st-intro" data-st-intro>
+        <span class="stories-badge" data-i18n="stories.badge">{t('stories.badge')}</span>
+        <p class="st-intro-title" data-i18n="stories.title">{t('stories.title')}</p>
+        <p class="stories-subhead" data-i18n="stories.description">{t('stories.description')}</p>
+      </div>
+      {
+        phases.map((phase, i) => (
+          <div class="st-phase" data-st-phase>
+            <span class="st-count">[ 0{i + 1} ]</span>
+            <span class="journey-tag" data-i18n={phase.tag}>{t(phase.tag)}</span>
+            <p class="st-phase-title" data-i18n={phase.title}>{t(phase.title)}</p>
+          </div>
+        ))
+      }
+      {chips.map((chip) => <span class="st-chip" data-st-chip data-x={chip.x} data-y={chip.y} style={`background:${chip.c};width:${chip.w}px;height:${chip.h}px`} />)}
+      {
+        phases.flatMap((phase) =>
+          phase.photos.map((photo) => (
+            <figure class="st-photo" data-st-photo data-aspect={(photo.width / photo.height).toFixed(4)}>
+              <img src={photo.src} alt="" loading="lazy" decoding="async" width={photo.width} height={photo.height} />
+            </figure>
+          ))
+        )
+      }
+    </div>
   </div>
 </section>
 
@@ -347,4 +396,375 @@ const t = useTranslations(lang);
     transform: none;
     box-shadow: none;
   }
+  /* ---------- Photo flight: phones and narrow screens ----------
+     With motion welcome, each photo flies up into place as it scrolls into view (set up by the script, so
+     without it everything simply shows). */
+  .stories-section.st-reveal .photo-card {
+    opacity: 0;
+    transform: translateY(72px) rotate(var(--r, -3deg)) scale(0.92);
+    transition:
+      opacity 0.6s ease var(--d, 0s),
+      transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s),
+      box-shadow 0.25s ease;
+  }
+
+  .stories-section.st-reveal .photo-card.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---------- Scroll story: wide screens ----------
+     The section grows a tall track; the stage stays pinned while each phase's photos fly in one by one and
+     earlier ones settle into a collage round the edges. The plain content stays for screen readers. */
+  .st-track {
+    display: none;
+  }
+
+  .stories-section.is-live {
+    overflow: clip;
+    padding: 0;
+  }
+
+  .stories-section.is-live .stories-container {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .stories-section.is-live .st-track {
+    display: block;
+    position: relative;
+    height: 480vh;
+  }
+
+  .st-stage {
+    position: sticky;
+    top: var(--st-top, 68px);
+    height: calc(100vh - var(--st-top, 68px));
+    overflow: hidden;
+  }
+
+  .st-photo,
+  .st-chip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  .st-photo {
+    background-color: var(--md-sys-color-surface-container);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
+  }
+
+  .st-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .st-dots {
+    position: absolute;
+    right: var(--space-5);
+    top: 50%;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 8px;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+    transform: translateY(-50%);
+  }
+
+  .st-dots span {
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 3px;
+    background-color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.45;
+    transition: height 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.3s ease;
+  }
+
+  .st-dots span.is-active {
+    height: 22px;
+    opacity: 1;
+    background-color: var(--md-sys-color-on-surface);
+  }
+
+  .st-intro {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(760px, 90%);
+    text-align: center;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+  }
+
+  .st-intro-title {
+    margin: var(--space-3) 0;
+    color: var(--md-sys-color-on-surface);
+    font-size: clamp(2.75rem, 6vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .st-phase {
+    position: absolute;
+    left: max(24px, calc((100% - 1200px) / 2 + 24px));
+    top: 50%;
+    width: min(34%, 440px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    opacity: 0;
+    z-index: 20;
+    text-shadow: 0 0 22px var(--color-surface), 0 0 8px var(--color-surface);
+  }
+
+  .st-count {
+    color: var(--md-sys-color-on-surface-variant);
+    font: 600 0.875rem/1 ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    letter-spacing: 0.14em;
+  }
+
+  .st-phase-title {
+    margin: 0;
+    color: var(--md-sys-color-on-surface);
+    font-size: clamp(2.25rem, 4vw, 3.75rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  :global(html[lang='km']) .st-phase-title,
+  :global(html[lang='km']) .st-intro-title {
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+
+  :global([data-theme="dark"]) .st-intro-title,
+  :global([data-theme="dark"]) .st-phase-title {
+    color: #FFFFFF;
+  }
+
+  :global([data-theme="dark"]) .st-photo {
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+  }
 </style>
+
+<script>
+  import { jumpBy } from '../../scripts/smooth-scroll';
+
+  const section = document.querySelector<HTMLElement>('[data-stories]');
+
+  if (section && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const html = document.documentElement;
+    const header = document.querySelector<HTMLElement>('.site-header');
+
+    // ---------- Phones and narrow screens: each photo flies in as it comes into view ----------
+    const cards = [...section.querySelectorAll<HTMLElement>('.photo-card')];
+    section.classList.add('st-reveal');
+    cards.forEach((card, i) => {
+      card.style.setProperty('--d', `${(i % 2) * 0.16}s`);
+      card.style.setProperty('--r', `${i % 2 ? 4 : -4}deg`);
+    });
+    const reveal = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('is-in');
+          reveal.unobserve(e.target);
+        }),
+      { rootMargin: '0px 0px -10% 0px' }
+    );
+    cards.forEach((card) => reveal.observe(card));
+
+    // ---------- Wide screens: the pinned story ----------
+    const track = section.querySelector<HTMLElement>('[data-st-track]')!;
+    const stage = section.querySelector<HTMLElement>('[data-st-stage]')!;
+    const intro = section.querySelector<HTMLElement>('[data-st-intro]')!;
+    const phases = [...section.querySelectorAll<HTMLElement>('[data-st-phase]')];
+    const photos = [...section.querySelectorAll<HTMLElement>('[data-st-photo]')];
+    const chips = [...section.querySelectorAll<HTMLElement>('[data-st-chip]')];
+    const dots = [...section.querySelectorAll<HTMLElement>('[data-st-dot]')];
+
+    const clamp = (v: number, a = 0, b = 1) => Math.min(Math.max(v, a), b);
+    const seg = (p: number, a: number, b: number) => clamp((p - a) / (b - a));
+    const ease = (t: number) => t * t * (3 - 2 * t);
+    const flyIn = (t: number) => 1 - Math.pow(1 - t, 3); // fast, then settles gently
+    const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+    const suits = () =>
+      window.innerWidth >= 900 &&
+      window.innerWidth > window.innerHeight &&
+      window.innerHeight >= 560 &&
+      (html.getAttribute('data-theme') || 'light') !== 'contrast';
+
+    // When each phase begins (its two photos then arrive a little apart)
+    const START = [0.1, 0.38, 0.66];
+    type Place = { x: number; y: number; h: number; r: number };
+    let featured: Place[] = [];
+    let resting: Place[] = [];
+    let W = 0;
+    let H = 0;
+    let live = false;
+
+    const layout = () => {
+      section.style.setProperty('--st-top', `${header?.offsetHeight ?? 0}px`);
+      W = stage.clientWidth;
+      H = stage.clientHeight;
+      // Featured: the phase's two photos large on the right, the second a little lower and overlapping
+      featured = [];
+      for (let k = 0; k < 3; k++) {
+        const [a, b] = [photos[k * 2], photos[k * 2 + 1]].map((el) => Number(el.dataset.aspect));
+        let hA = H * 0.46;
+        let hB = H * 0.38;
+        const room = W * 0.49; // clear of the dots on the right edge
+        let total = hA * a + hB * b * 0.92;
+        if (total > room) {
+          hA *= room / total;
+          hB *= room / total;
+          total = room;
+        }
+        const left = W * 0.43 + (room - total) / 2;
+        const wA = hA * a;
+        featured.push({ x: left + wA / 2, y: H * 0.42, h: hA, r: -1.5 });
+        const wB = hB * b;
+        featured.push({ x: left + wA - wB * 0.08 + wB / 2, y: H * 0.6, h: hB, r: 2 });
+      }
+      // Resting: earlier phases settle small along the top and bottom edges, clear of the text and photos
+      resting = [
+        { x: W * 0.16, y: H * 0.13, h: H * 0.15, r: -3 },
+        { x: W * 0.2, y: H * 0.87, h: H * 0.12, r: 2 },
+        { x: W * 0.6, y: H * 0.09, h: H * 0.13, r: 2.5 },
+        { x: W * 0.93, y: H * 0.15, h: H * 0.2, r: -2 },
+        featured[4],
+        featured[5],
+      ];
+      photos.forEach((el, i) => {
+        el.style.height = `${featured[i].h}px`;
+        el.style.width = `${featured[i].h * Number(el.dataset.aspect)}px`;
+      });
+    };
+
+    const progress = () => {
+      const distance = track.offsetHeight - stage.offsetHeight;
+      return clamp(((header?.offsetHeight ?? 0) - track.getBoundingClientRect().top) / distance);
+    };
+
+    const paint = () => {
+      if (!live) return;
+      const p = progress();
+      section.dataset.progress = p.toFixed(3);
+
+      // The title first, lifting away as the first photos arrive
+      const away = ease(seg(p, 0.03, 0.11));
+      intro.style.opacity = String(1 - away);
+      intro.style.transform = `translate(-50%, calc(-50% - ${away * 60}px))`;
+
+      const step = p < START[1] - 0.02 ? 0 : p < START[2] - 0.02 ? 1 : 2;
+      dots.forEach((dot, i) => dot.classList.toggle('is-active', i === step));
+
+      phases.forEach((el, k) => {
+        const inT = ease(seg(p, START[k] - 0.01, START[k] + 0.05));
+        const outT = k < 2 ? ease(seg(p, START[k + 1] - 0.04, START[k + 1])) : 0;
+        const shown = inT * (1 - outT);
+        el.style.opacity = String(shown);
+        el.style.transform = `translateY(calc(-50% + ${(1 - inT) * 40 - outT * 40}px))`;
+        el.style.visibility = shown < 0.01 ? 'hidden' : 'visible';
+      });
+
+      photos.forEach((el, i) => {
+        const k = Math.floor(i / 2);
+        const j = i % 2;
+        const begin = START[k] + j * 0.05;
+        const raw = seg(p, begin, begin + 0.1);
+        const arrive = flyIn(raw);
+        const settle = k < 2 ? ease(seg(p, START[k + 1] - 0.03, START[k + 1] + 0.08)) : 0;
+        const f = featured[i];
+        const r = resting[i];
+        // Up from below the screen, tilted and small, to its place; later on to its resting place
+        const tx = mix(f.x, r.x, settle);
+        const drift = k < 2 ? Math.max(0, p - (START[k + 1] + 0.08)) * H * -0.25 : 0;
+        const ty = mix(f.y, r.y, settle) + drift;
+        const th = mix(f.h, r.h, settle);
+        const tr = mix(f.r, r.r, settle);
+        const x = mix(tx + (j ? 1 : -1) * W * 0.12, tx, arrive);
+        const y = mix(ty + H * 0.85, ty, arrive);
+        const rot = mix((j ? 1 : -1) * 13, tr, arrive);
+        const scale = mix(0.65, 1, arrive) * (th / f.h);
+        const w = f.h * Number(el.dataset.aspect);
+        el.style.transform = `translate3d(${x - w / 2}px, ${y - f.h / 2}px, 0) rotate(${rot}deg) scale(${scale})`;
+        el.style.opacity = String(seg(raw, 0, 0.3));
+        el.style.zIndex = String(settle > 0.5 ? 1 + i : 10 + i);
+      });
+
+      chips.forEach((el, i) => {
+        const at = 0.06 + i * 0.11;
+        const t = flyIn(seg(p, at, at + 0.07));
+        const x = Number(el.dataset.x) * W;
+        const y = Number(el.dataset.y) * H + (1 - t) * 90 - Math.max(0, p - at) * H * (0.12 + (i % 3) * 0.08);
+        el.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${(1 - t) * (i % 2 ? 20 : -20)}deg)`;
+        el.style.opacity = String(t * 0.9);
+      });
+    };
+
+    const goLive = () => {
+      if (live) return;
+      const before = track.offsetHeight;
+      const passed = section.getBoundingClientRect().bottom <= 0;
+      section.classList.add('is-live');
+      live = true;
+      photos.forEach((el) => {
+        const img = el.querySelector('img');
+        if (img) img.loading = 'eager';
+      });
+      if (passed) jumpBy(track.offsetHeight - before);
+      layout();
+      paint();
+    };
+    const goFlat = () => {
+      if (!live) return;
+      const before = track.offsetHeight;
+      const passed = section.getBoundingClientRect().bottom <= 0;
+      section.classList.remove('is-live');
+      live = false;
+      if (passed) jumpBy(track.offsetHeight - before);
+    };
+    const update = () => (suits() ? goLive() : goFlat());
+
+    let raf = 0;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!raf)
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            paint();
+          });
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', () => {
+      update();
+      if (live) {
+        layout();
+        paint();
+      }
+    });
+    new MutationObserver(update).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+    update();
+  }
+</script>

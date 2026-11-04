@@ -1,7 +1,7 @@
 // The songKHEM Android app, drawn on a canvas for the 3D phone's screen. Every size, colour, font and icon
 // comes from the app's own code (OCR-for-impaired-user/mobile/src: theme/tokens.js, theme/shell.js,
 // components/AppHeader.js, navigation/MainTabs.js, components/CameraCapture.js, components/ProcessingCard.js,
-// screens/ReaderScreen.js), in light theme, laid out in Android dp on a 411 dp wide phone like the one the
+// screens/ReaderScreen.js, screens/UploadScreen.js, components/UploadDropzone.js, components/SampleDocsGrid.js), in light theme, laid out in Android dp on a 411 dp wide phone like the one the
 // app was tested on (1080 x 2400 at 420 dpi).
 
 /** Screen width in dp. The height follows the 3D screen's shape (the app's layout is all flex). */
@@ -19,9 +19,25 @@ export type AppText = {
   progress: string;
   readerTitle: string;
   voice: string;
+  // Upload tab (only the features section shows it)
+  upTitle?: string;
+  upDesc?: string;
+  upButton?: string;
+  upHelper?: string;
+  upSamples?: string;
+  s1c?: string;
+  s1t?: string;
+  s2c?: string;
+  s2t?: string;
+  s3c?: string;
+  s3t?: string;
 };
 
 export type AppState = {
+  /** Which tab the camera side shows (default camera) */
+  screen?: 'camera' | 'upload';
+  /** Upload tab: 0..1 press on the "choose a document" button */
+  press?: number;
   /** 0 = camera tab, 1 = reader (they cross-fade through a blank screen) */
   reader: number;
   guide: 'search' | 'further' | 'found';
@@ -62,6 +78,9 @@ const C = {
   labelActive: '#041E49',
   highlight: '#FEF08A',
   outline: '#EF4444',
+  surface2: '#DBE7FF',
+  navy: '#0B1B4D',
+  heading: '#4466F6',
 };
 
 // Android's own fonts for text the app leaves unstyled (Roboto, and Noto Sans Khmer for Khmer), and the
@@ -81,6 +100,27 @@ export const APP_FONTS = [
 export const APP_FONTS_CSS =
   'https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600&family=Roboto:wght@400;500;600;700&family=Suwannaphum:wght@400;700&display=swap';
 
+/** Loads the app's fonts (and any `extra` faces) for the phone screen only, so the rest of the page doesn't
+ * wait for them. Gives up after a few seconds: the screen then draws in fallback fonts. */
+export async function loadAppFonts(extra: string[] = []) {
+  if (!document.querySelector(`link[href="${APP_FONTS_CSS}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = APP_FONTS_CSS;
+    document.head.appendChild(link);
+    await new Promise((resolve) => {
+      link.onload = resolve;
+      link.onerror = resolve;
+      setTimeout(resolve, 4000);
+    });
+  }
+  await Promise.race([
+    // Sample text in both scripts, so the Khmer and Latin parts of each font (separate files) both load
+    Promise.all([...extra, ...APP_FONTS].map((font) => document.fonts.load(font, 'កខគ Aa1'))),
+    new Promise((resolve) => setTimeout(resolve, 4000)),
+  ]).catch(() => undefined);
+}
+
 // ---------- Icons: lucide-react-native 1.47.0 (ISC), exactly as the app uses them ----------
 export type IconNode = [string, Record<string, string>][];
 export const ICONS: Record<string, IconNode> = {
@@ -98,6 +138,7 @@ export const ICONS: Record<string, IconNode> = {
   skipBack: [['path', { d: 'M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z' }], ['path', { d: 'M3 20V4' }]],
   skipForward: [['path', { d: 'M21 4v16' }], ['path', { d: 'M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z' }]],
   pause: [['rect', { x: '14', y: '3', width: '5', height: '18', rx: '1' }], ['rect', { x: '5', y: '3', width: '5', height: '18', rx: '1' }]],
+  arrowRight: [['path', { d: 'M5 12h14' }], ['path', { d: 'm12 5 7 7-7 7' }]],
   play: [['path', { d: 'M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z' }]],
 };
 // The reader's floating button icon (the website's src/assets/signalIcon.svg, 41 x 51)
@@ -243,7 +284,7 @@ export function createAppScreen(UH: number, scale: number) {
     icon(c, 'languages', UW - 16 - 22 - 96, cy, 22, C.icon);
   };
 
-  const tabBar = (text: AppText) => {
+  const tabBar = (text: AppText, current = 0) => {
     c.fillStyle = C.navBg;
     c.fillRect(0, TABS, UW, UH - TABS);
     c.fillStyle = C.navBorder;
@@ -256,7 +297,7 @@ export function createAppScreen(UH: number, scale: number) {
     tabs.forEach(([name, label], i) => {
       const cx = 16 + gap + tabW / 2 + i * (tabW + gap * 2);
       const top = TABS + (80 - 52) / 2;
-      const focused = i === 0;
+      const focused = i === current;
       if (focused) {
         c.fillStyle = C.pill;
         rrect(c, cx - 32, top, 64, 32, 16);
@@ -445,6 +486,95 @@ export function createAppScreen(UH: number, scale: number) {
     c.textAlign = 'left';
   };
 
+  // UploadScreen: 16 dp page padding; the dropzone card (white, 24 dp corners, soft shadow) and the sample list
+  const upload = (s: AppState, text: AppText) => {
+    c.fillStyle = C.bg;
+    c.fillRect(0, 0, UW, UH);
+    header();
+    const x = 16;
+    const w = UW - 32;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.font = `700 21px ${SUWAN}`;
+    const title = wrap((text.upTitle ?? '').split(' '), w - 28);
+    const h = 16 + 52 + 8 + title.length * 30 + 8 + 22 + 8 + 10 + 52 + 8 + 6 + 22 + 16;
+    let y = HEADER + 16 + 4;
+    elevation(c, 3);
+    c.fillStyle = '#FFFFFF';
+    rrect(c, x, y, w, h, 24);
+    c.fill();
+    noShadow(c);
+    y += 16;
+    c.fillStyle = C.surface2;
+    c.beginPath();
+    c.arc(UW / 2, y + 26, 26, 0, Math.PI * 2);
+    c.fill();
+    icon(c, 'upload', UW / 2, y + 26, 26, C.primary);
+    y += 52 + 8;
+    c.fillStyle = C.onSurface;
+    c.font = `700 21px ${SUWAN}`;
+    title.forEach((l, i) => c.fillText(l, UW / 2, y + 15 + i * 30));
+    y += title.length * 30 + 8;
+    c.fillStyle = C.onSurfaceMuted;
+    c.font = `400 16px ${SUWAN}`;
+    c.fillText(fitLine(c, text.upDesc ?? '', w - 28), UW / 2, y + 11);
+    y += 22 + 8 + 10;
+    // NeoButton: a pill, soft elevation, dims a little when pressed
+    c.font = `700 19px ${SUWAN}`;
+    const label = text.upButton ?? '';
+    const bw = 26 + 20 + 8 + c.measureText(label).width + 26;
+    const press = s.press ?? 0;
+    c.save();
+    c.translate(UW / 2, y + 26);
+    c.scale(1 - 0.03 * press, 1 - 0.03 * press);
+    elevation(c, 3);
+    c.fillStyle = press > 0.5 ? C.primaryPressed : C.primary;
+    rrect(c, -bw / 2, -26, bw, 52, 26);
+    c.fill();
+    noShadow(c);
+    icon(c, 'upload', -bw / 2 + 26 + 10, 0, 20, '#FFFFFF');
+    c.fillStyle = '#FFFFFF';
+    c.textAlign = 'left';
+    c.fillText(label, -bw / 2 + 26 + 20 + 8, 1);
+    c.restore();
+    y += 52 + 8 + 6;
+    c.textAlign = 'center';
+    c.fillStyle = C.onSurfaceMuted;
+    c.font = `500 16px ${SUWAN}`;
+    c.fillText(fitLine(c, text.upHelper ?? '', w - 28), UW / 2, y + 11);
+    y = HEADER + 16 + 4 + h + 16;
+
+    // "Try a sample document:" and an unboxed list: navy chip, big title in the heading blue, arrow
+    icon(c, 'sparkles', x + 12, y + 16, 24, C.heading);
+    c.textAlign = 'left';
+    c.fillStyle = C.heading;
+    c.font = `700 21px ${SUWAN}`;
+    c.fillText(fitLine(c, text.upSamples ?? '', w - 40), x + 32, y + 17);
+    y += 32 + 12;
+    const rows: [string | undefined, string | undefined][] = [[text.s1c, text.s1t], [text.s2c, text.s2t], [text.s3c, text.s3t]];
+    rows.forEach(([cat, name], i) => {
+      if (y > TABS - 40) return;
+      if (i) {
+        c.fillStyle = C.divider;
+        c.fillRect(x, y, w, 1);
+      }
+      const top = y + 12;
+      c.font = `700 16px ${SUWAN}`;
+      const chipW = c.measureText(cat ?? '').width + 20;
+      c.fillStyle = C.navy;
+      rrect(c, x + 14, top, chipW, 28, 14);
+      c.fill();
+      c.fillStyle = '#FFFFFF';
+      c.fillText(cat ?? '', x + 24, top + 15);
+      c.fillStyle = C.heading;
+      c.font = `700 26px ${SUWAN}`;
+      c.fillText(fitLine(c, name ?? '', w - 28 - 40), x + 14, top + 28 + 6 + 18);
+      icon(c, 'arrowRight', x + w - 14 - 13, top + 34, 26, C.primary);
+      y = top + 28 + 6 + 35 + 12;
+    });
+    tabBar(text, 1);
+  };
+
   const reader = (s: AppState, text: AppText, paragraphs: string[][]) => {
     c.fillStyle = C.bg;
     c.fillRect(0, 0, UW, UH);
@@ -582,14 +712,15 @@ export function createAppScreen(UH: number, scale: number) {
     c.setTransform(canvas.width / UW, 0, 0, canvas.height / UH, 0, 0);
     c.clearRect(0, 0, UW, UH);
     c.textAlign = 'left';
-    // Camera fades to the blank app, then the reader fades in: never both at once
-    if (s.reader <= 0) camera(s, text);
+    // The camera (or upload) tab fades to the blank app, then the reader fades in: never both at once
+    const side = s.screen === 'upload' ? upload : camera;
+    if (s.reader <= 0) side(s, text);
     else {
       c.fillStyle = C.bg;
       c.fillRect(0, 0, UW, UH);
       if (s.reader < 0.5) {
         c.globalAlpha = 1 - s.reader * 2;
-        camera(s, text);
+        side(s, text);
       } else {
         c.globalAlpha = s.reader * 2 - 1;
         reader(s, text, paragraphs);
